@@ -1,4 +1,4 @@
-export const createTripInfoCostTemplate = (points) => {
+export const createTripInfoCostTemplate = (points = []) => {
   const tripBasicCost = points
     .map((point) => point.basePrice)
     .reduce((sum, item) => sum + item, 0);

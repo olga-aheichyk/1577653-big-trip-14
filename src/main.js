@@ -7,14 +7,15 @@ import { createTripSortTemplate } from './view/trip-sort.js';
 import { createTripEventsListTemplate } from './view/trip-events-list.js';
 import { createTripEventsItemTemplate } from './view/trip-events-item.js';
 import { createTripEventsEditTemplate } from './view/trip-events-edit.js';
-// import { createTripEventsCreateTemplate } from './view/trip-events-create.js';
+import { createTripEventsCreateTemplate } from './view/trip-events-create.js';
 import { generatePoint } from './mock/generate-point.js';
-
 
 const TRIP_EVENTS_COUNT = 15;
 
 const MOCKS = new Array(TRIP_EVENTS_COUNT).fill().map(generatePoint);
+
 // console.log(MOCKS);
+
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -35,15 +36,19 @@ render(tripInfoElement, createTripInfoCostTemplate(MOCKS), 'beforeend');
 render(tripControlsNavigationElement, createNavigationTemplate(), 'beforeend');
 render(tripControlsFiltersElement, createTripFiltersTemplate(), 'beforeend');
 
-// render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
-
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
+
 render(tripEventsElement, createTripEventsListTemplate(), 'beforeend');
 
-const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
+if (MOCKS.length === 0) {
+  render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
+}
 
-render(tripEventsListElement, createTripEventsEditTemplate(MOCKS[0]), 'afterbegin');
+else {
+  const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
+  render(tripEventsListElement, createTripEventsEditTemplate(MOCKS[0]), 'afterbegin');
 
-for (let i = 1; i < TRIP_EVENTS_COUNT; i++) {
-  render(tripEventsListElement, createTripEventsItemTemplate(MOCKS[i]), 'beforeend');
+  for (let i = 1; i < TRIP_EVENTS_COUNT; i++) {
+    render(tripEventsListElement, createTripEventsItemTemplate(MOCKS[i]), 'beforeend');
+  }
 }

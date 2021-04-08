@@ -1,4 +1,4 @@
-export const createTripInfoMainTemplate = (points) => {
+export const createTripInfoMainTemplate = (points = []) => {
   const tripCityes = points.map((point) => {
     return point.info.name;
   }).join(' &mdash; ');

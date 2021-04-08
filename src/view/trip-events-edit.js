@@ -36,31 +36,47 @@ const typesCheckboxTemplate = TYPES.map((item, index) => {
     </div>`;
 }).join('\n');
 
-const offersCheckboxTemplate = OFFERS.map((item, index) => {
-  return `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden"
-  id="event-offer-${item.shortName}-${index}"
-  type="checkbox"
-  name="event-offer-${item.shortName}">
-  <label class="event__offer-label" for="event-offer-${item.shortName}-1">
+export const createTripEventsEditTemplate = (point = {}) => {
+  const {dateFrom = dayjs(),
+    dateTo = dayjs().add(2, 'day'),
+    basePrice = 0,
+    type = 'flight',
+    info = {
+      name: '',
+      description: '',
+    },
+    offers = [],
+  } = point;
+
+  const offersCheckboxTemplate = OFFERS.map((item, index) => {
+    const isCheckedOffer = offers.map((offer) => offer.shortName).includes(item.shortName);
+
+    if (isCheckedOffer) {
+      return `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden"
+      id="event-offer-${item.shortName}-${index}"
+      type="checkbox"
+      name="event-offer-${item.shortName}" checked>
+      <label class="event__offer-label" for="event-offer-${item.shortName}-1">
+      <span class="event__offer-title">${item.name}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${item.price}</span>
+      </label>
+      </div>`;
+    }
+
+    return `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden"
+    id="event-offer-${item.shortName}-${index}"
+    type="checkbox"
+    name="event-offer-${item.shortName}">
+    <label class="event__offer-label" for="event-offer-${item.shortName}-1">
     <span class="event__offer-title">${item.name}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${item.price}</span>
-  </label>
-</div>`;
-}).join('\n');
-
-
-// typesCheckboxTemplate.querySelector('#event-type-${type}').checked = true;
-
-
-export const createTripEventsEditTemplate = (point) => {
-  const {dateFrom,
-    dateTo,
-    basePrice,
-    type,
-    info,
-  } = point;
+    </label>
+    </div>`;
+  }).join('\n');
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -68,7 +84,7 @@ export const createTripEventsEditTemplate = (point) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
