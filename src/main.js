@@ -7,9 +7,17 @@ import { createTripSortTemplate } from './view/trip-sort.js';
 import { createTripEventsListTemplate } from './view/trip-events-list.js';
 import { createTripEventsItemTemplate } from './view/trip-events-item.js';
 import { createTripEventsEditTemplate } from './view/trip-events-edit.js';
-// import { createTripEventsCreateTemplate } from './view/trip-events-create.js';
+import { createTripEventsCreateTemplate } from './view/trip-events-create.js';
+import { generatePoint } from './mock/generate-point.js';
 
-const TRIP_EVENTS_COUNT = 3;
+const TRIP_EVENTS_COUNT = 15;
+
+const pointsData = new Array(TRIP_EVENTS_COUNT).fill().map(generatePoint);
+// console.log(pointsData);
+
+const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
+const sortedPointsData = pointsData.sort((a, b) => sortByDateAscending(a.dateFrom, b.dateFrom));
+// console.log(sortedPointsData);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -24,21 +32,25 @@ render(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 
 const tripInfoElement = tripMainElement.querySelector('.trip-info');
 
-render(tripInfoElement, createTripInfoMainTemplate(), 'beforeend');
-render(tripInfoElement, createTripInfoCostTemplate(), 'beforeend');
+render(tripInfoElement, createTripInfoMainTemplate(sortedPointsData), 'beforeend');
+render(tripInfoElement, createTripInfoCostTemplate(sortedPointsData), 'beforeend');
 
 render(tripControlsNavigationElement, createNavigationTemplate(), 'beforeend');
-render(tripControlsFiltersElement, createTripFiltersTemplate(), 'beforeend');
-
-// render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
+render(tripControlsFiltersElement, createTripFiltersTemplate(sortedPointsData), 'beforeend');
 
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
+
 render(tripEventsElement, createTripEventsListTemplate(), 'beforeend');
 
-const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
+if (pointsData.length === 0) {
+  render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
+}
 
-render(tripEventsListElement, createTripEventsEditTemplate(), 'afterbegin');
+else {
+  const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
+  render(tripEventsListElement, createTripEventsEditTemplate(sortedPointsData[0]), 'afterbegin');
 
-for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
-  render(tripEventsListElement, createTripEventsItemTemplate(), 'beforeend');
+  for (let i = 1; i < TRIP_EVENTS_COUNT; i++) {
+    render(tripEventsListElement, createTripEventsItemTemplate(sortedPointsData[i]), 'beforeend');
+  }
 }

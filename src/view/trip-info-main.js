@@ -1,7 +1,27 @@
-export const createTripInfoMainTemplate = () => {
-  return `<div class="trip-info__main">
-  <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+import dayjs from 'dayjs';
+import minMax from 'dayjs/plugin/minMax';
 
-  <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
-  </div>`;
+dayjs.extend(minMax);
+
+export const createTripInfoMainTemplate = (points = []) => {
+  if (points.length !== 0) {
+
+    const tripCityes = points.map((point) => {
+      return point.info.name;
+    }).join(' &mdash; ');
+
+    const arrayFromStartDates = points.map((point) => dayjs(point.dateFrom));
+    const arrayFromEndDates = points.map((point) => dayjs(point.dateTo));
+
+    const startTripDay = dayjs.min(arrayFromStartDates).format('MMM DD');
+    const endTripDay = dayjs.max(arrayFromEndDates).format('MMM DD');
+
+    return `<div class="trip-info__main">
+    <h1 class="trip-info__title">${tripCityes}</h1>
+
+    <p class="trip-info__dates">${startTripDay}&nbsp;&mdash;&nbsp;${endTripDay}</p>
+    </div>`;
+  }
+
+  return '';
 };
