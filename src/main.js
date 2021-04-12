@@ -12,10 +12,12 @@ import { generatePoint } from './mock/generate-point.js';
 
 const TRIP_EVENTS_COUNT = 15;
 
-const MOCKS = new Array(TRIP_EVENTS_COUNT).fill().map(generatePoint);
+const pointsData = new Array(TRIP_EVENTS_COUNT).fill().map(generatePoint);
+// console.log(pointsData);
 
-// console.log(MOCKS);
-
+const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
+const sortedPointsData = pointsData.sort((a, b) => sortByDateAscending(a.dateFrom, b.dateFrom));
+// console.log(sortedPointsData);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -30,25 +32,25 @@ render(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 
 const tripInfoElement = tripMainElement.querySelector('.trip-info');
 
-render(tripInfoElement, createTripInfoMainTemplate(MOCKS), 'beforeend');
-render(tripInfoElement, createTripInfoCostTemplate(MOCKS), 'beforeend');
+render(tripInfoElement, createTripInfoMainTemplate(sortedPointsData), 'beforeend');
+render(tripInfoElement, createTripInfoCostTemplate(sortedPointsData), 'beforeend');
 
 render(tripControlsNavigationElement, createNavigationTemplate(), 'beforeend');
-render(tripControlsFiltersElement, createTripFiltersTemplate(), 'beforeend');
+render(tripControlsFiltersElement, createTripFiltersTemplate(sortedPointsData), 'beforeend');
 
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
 
 render(tripEventsElement, createTripEventsListTemplate(), 'beforeend');
 
-if (MOCKS.length === 0) {
+if (pointsData.length === 0) {
   render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
 }
 
 else {
   const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
-  render(tripEventsListElement, createTripEventsEditTemplate(MOCKS[0]), 'afterbegin');
+  render(tripEventsListElement, createTripEventsEditTemplate(sortedPointsData[0]), 'afterbegin');
 
   for (let i = 1; i < TRIP_EVENTS_COUNT; i++) {
-    render(tripEventsListElement, createTripEventsItemTemplate(MOCKS[i]), 'beforeend');
+    render(tripEventsListElement, createTripEventsItemTemplate(sortedPointsData[i]), 'beforeend');
   }
 }

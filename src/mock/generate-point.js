@@ -6,6 +6,8 @@ import {
 
 import dayjs from 'dayjs';
 
+import { nanoid } from 'nanoid';
+
 const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'transport', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const CITYES = [
@@ -76,7 +78,7 @@ const generateInfo = () => {
   return {
     name: getRandomElementFromArray(CITYES),
     description: makeRandomArray(DESCRIPTIONS).slice(0, 5).join(' '),
-    pictures: new Array(getRandomInteger(1, 5)).fill().map(generatePhoto),
+    pictures: new Array(getRandomInteger(0, 5)).fill().map(generatePhoto),
   };
 };
 
@@ -91,7 +93,7 @@ export const generatePoint = () => {
     type: getRandomElementFromArray(POINT_TYPES),
     offers: makeRandomArray(OFFERS),
     info: generateInfo(),
-    id: getRandomInteger(1, 20),
+    id: nanoid(5),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     basePrice: getRandomInteger(10, 500),
     dateFrom,

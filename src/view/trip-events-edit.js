@@ -38,12 +38,16 @@ const typesCheckboxTemplate = TYPES.map((item, index) => {
 
 export const createTripEventsEditTemplate = (point = {}) => {
   const {dateFrom = dayjs(),
-    dateTo = dayjs().add(2, 'day'),
+    dateTo = dayjs(dateFrom).add(1, 'day'),
     basePrice = 0,
     type = 'flight',
     info = {
       name: '',
       description: '',
+      pictures: {
+        src: '',
+        description: '',
+      },
     },
     offers = [],
   } = point;
@@ -77,6 +81,33 @@ export const createTripEventsEditTemplate = (point = {}) => {
     </label>
     </div>`;
   }).join('\n');
+
+  const createDestinationTemplate = () => {
+
+    const createImagesTemplate = () => {
+      if (info.pictures) {
+        const imagesMarkup = info.pictures.map((item) => {
+          return `<img class="event__photo" src = "${item.src}" alt = "${item.description}">`;
+        }).join('\n');
+
+        return `<div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${imagesMarkup}
+        </div>
+        </div>`;
+      }
+      return '';
+    };
+
+    if (info.description) {
+      return `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">${info.name}</h3>
+      <p class="event__destination-description">${info.description}</p>
+      ${createImagesTemplate()}
+      </section>`;
+    }
+    return '';
+  };
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -145,11 +176,7 @@ export const createTripEventsEditTemplate = (point = {}) => {
           ${offersCheckboxTemplate}
         </div>
       </section>
-
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${info.description}</p>
-      </section>
+      ${createDestinationTemplate()}
     </section>
   </form>
 </li>`;
