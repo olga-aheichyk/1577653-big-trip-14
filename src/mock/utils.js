@@ -4,7 +4,7 @@
  * @param {number} max — максимальное значение
  * @return {number|false} — случайное число
  */
- const getRandomInteger = (min, max) => {
+const getRandomInteger = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   const randomNumber = Math.random() * (max - min + 1) + min;

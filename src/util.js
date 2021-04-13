@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 
-
 const getDuration = (from, to) => {
   const durationInMinutes = dayjs(to).diff(dayjs(from), 'minute');
   if (durationInMinutes < 60) {

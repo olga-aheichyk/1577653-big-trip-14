@@ -62,12 +62,12 @@ const OFFERS = [
     shortName: 'train',
   },
   {
-    name: "Upgrade to a business class",
+    name: 'Upgrade to a business class',
     price: 120,
     shortName: 'business',
   },
   {
-    name: "Choose the radio station",
+    name: 'Choose the radio station',
     price: 60,
     shortName: 'radio',
   },

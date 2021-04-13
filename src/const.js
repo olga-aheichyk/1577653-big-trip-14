@@ -40,4 +40,4 @@ const OFFERS = [
 export {
   TYPES,
   OFFERS
-}
+};

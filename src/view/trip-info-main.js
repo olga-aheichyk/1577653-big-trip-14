@@ -16,11 +16,12 @@ export const createTripInfoMainTemplate = (points = []) => {
     const startTripDay = dayjs.min(arrayFromStartDates).format('MMM DD');
     const endTripDay = dayjs.max(arrayFromEndDates).format('MMM DD');
 
-    return `<div class="trip-info__main">
-    <h1 class="trip-info__title">${tripCityes}</h1>
-
-    <p class="trip-info__dates">${startTripDay}&nbsp;&mdash;&nbsp;${endTripDay}</p>
-    </div>`;
+    return `
+    <div class="trip-info__main">
+      <h1 class="trip-info__title">${tripCityes}</h1>
+      <p class="trip-info__dates">${startTripDay}&nbsp;&mdash;&nbsp;${endTripDay}</p>
+    </div>
+    `;
   }
 
   return '';

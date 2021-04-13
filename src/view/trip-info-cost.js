@@ -13,8 +13,13 @@ export const createTripInfoCostTemplate = (points = []) => {
     .map((array) => array.map((offer) => offer.price).reduce((sum, item) => sum + item, 0))
     .reduce((sum, item) => sum + item, 0);
 
-  return `<p class="trip-info__cost">
-    Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripBasicCost + tripAdditionalCost}</span>
-    </p>`;
+  return `
+  <p class="trip-info__cost">
+    Total: &euro;&nbsp;
+    <span class="trip-info__cost-value">
+      ${tripBasicCost + tripAdditionalCost}
+    </span>
+  </p>
+  `;
 };
 
