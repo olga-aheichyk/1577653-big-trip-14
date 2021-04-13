@@ -9,13 +9,13 @@ import { createTripEventsItemTemplate } from './view/trip-events-item.js';
 import { createTripEventsEditTemplate } from './view/trip-events-edit.js';
 import { createTripEventsCreateTemplate } from './view/trip-events-create.js';
 import { generatePoint } from './mock/generate-point.js';
+import { sortByDateAscending } from './util.js';
 
 const TRIP_EVENTS_COUNT = 15;
 
 const pointsData = new Array(TRIP_EVENTS_COUNT).fill().map(generatePoint);
 // console.log(pointsData);
 
-const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
 const sortedPointsData = pointsData.sort((a, b) => sortByDateAscending(a.dateFrom, b.dateFrom));
 // console.log(sortedPointsData);
 
@@ -42,7 +42,7 @@ render(tripEventsElement, createTripSortTemplate(), 'beforeend');
 
 render(tripEventsElement, createTripEventsListTemplate(), 'beforeend');
 
-if (pointsData.length === 0) {
+if (!pointsData) {
   render(tripEventsElement, createTripEventsCreateTemplate(), 'beforeend');
 }
 

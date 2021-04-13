@@ -1,33 +1,6 @@
 import dayjs from 'dayjs';
 
-const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
-const OFFERS = [
-  {
-    name: 'Add luggage',
-    price: 30,
-    shortName: 'lugagge',
-  },
-  {
-    name: 'Switch to comfort class',
-    price: 100,
-    shortName: 'comfort',
-  },
-  {
-    name: 'Add meal',
-    price: 15,
-    shortName: 'meal',
-  },
-  {
-    name: 'Choose seats',
-    price: 5,
-    shortName: 'seats',
-  },
-  {
-    name: 'Travel by train',
-    price: 40,
-    shortName: 'train',
-  },
-];
+import { TYPES, OFFERS } from '../const.js';
 
 const typesCheckboxTemplate = TYPES.map((item, index) => {
   return `<div class="event__type-item">
@@ -61,7 +34,7 @@ export const createTripEventsEditTemplate = (point = {}) => {
       id="event-offer-${item.shortName}-${index}"
       type="checkbox"
       name="event-offer-${item.shortName}" checked>
-      <label class="event__offer-label" for="event-offer-${item.shortName}-1">
+      <label class="event__offer-label" for="event-offer-${item.shortName}-${index}">
       <span class="event__offer-title">${item.name}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${item.price}</span>

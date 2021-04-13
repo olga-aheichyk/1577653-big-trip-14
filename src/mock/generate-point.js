@@ -2,7 +2,7 @@ import {
   getRandomInteger,
   getRandomElementFromArray,
   makeRandomArray
-} from '../util.js';
+} from './utils.js';
 
 import dayjs from 'dayjs';
 
@@ -27,6 +27,13 @@ const DESCRIPTIONS = [
   'Nunc fermentum tortor ac porta dapibus. ',
   'In rutrum ac purus sit amet tempus. ',
 ];
+
+// const OFFERS_OF_TYPE = [
+//   {
+//     type: "taxi",
+//     offers: [5, 6]
+//   }
+// ]
 
 const OFFERS = [
   {
@@ -53,6 +60,16 @@ const OFFERS = [
     name: 'Travel by train',
     price: 40,
     shortName: 'train',
+  },
+  {
+    name: "Upgrade to a business class",
+    price: 120,
+    shortName: 'business',
+  },
+  {
+    name: "Choose the radio station",
+    price: 60,
+    shortName: 'radio',
   },
 ];
 
