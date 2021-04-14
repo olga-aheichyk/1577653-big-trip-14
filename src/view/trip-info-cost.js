@@ -1,4 +1,6 @@
-export const createTripInfoCostTemplate = (points = []) => {
+import { createDOMElementFromMarkup } from '../util.js';
+
+const createTripInfoCostTemplate = (points) => {
   const tripBasicCost = points
     .map((point) => point.basePrice)
     .reduce((sum, item) => sum + item, 0);
@@ -22,4 +24,27 @@ export const createTripInfoCostTemplate = (points = []) => {
   </p>
   `;
 };
+
+export default class TripInfoCost {
+  constructor(points = []) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoCostTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElementFromMarkup(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
 

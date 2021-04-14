@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import { getDuration } from '../util.js';
+import { createDOMElementFromMarkup } from '../util.js';
 
-export const createTripEventsItemTemplate = (point) => {
+const createEventItemTemplate = (point) => {
   const {
     dateFrom,
     dateTo,
@@ -76,3 +77,26 @@ export const createTripEventsItemTemplate = (point) => {
   </li>
   `;
 };
+
+export default class EventItem {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventItemTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElementFromMarkup(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

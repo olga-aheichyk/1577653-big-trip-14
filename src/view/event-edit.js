@@ -1,40 +1,50 @@
 import dayjs from 'dayjs';
-
 import { TYPES, OFFERS } from '../const.js';
+import { createDOMElementFromMarkup } from '../util.js';
 
-const typesCheckboxTemplate = TYPES.map((item, index) => {
-  return `
-  <div class="event__type-item">
-    <input
-      id="event-type-${item.toLowerCase()}-${index}"
-      class="event__type-input  visually-hidden"
-      type="radio" name="event-type"
-      value="${item.toLowerCase()}"
-    />
-    <label
-    class="event__type-label  event__type-label--${item.toLowerCase()}"
-    for="event-type-${item.toLowerCase()}-${index}">
-      ${item}
-    </label>
-  </div>
-  `;
-}).join('\n');
-
-export const createTripEventsEditTemplate = (point = {}) => {
-  const {dateFrom = dayjs(),
-    dateTo = dayjs(dateFrom).add(1, 'day'),
-    basePrice = 0,
-    type = 'flight',
-    info = {
-      name: '',
+const BLANK_EVENT = {
+  dateFrom: dayjs(),
+  dateTo: dayjs(dayjs()).add(1, 'day'),
+  basePrice: 0,
+  type: 'flight',
+  info: {
+    name: '',
+    description: '',
+    pictures: {
+      src: '',
       description: '',
-      pictures: {
-        src: '',
-        description: '',
-      },
     },
-    offers = [],
+  },
+  offers: [],
+};
+
+const createEventEditTemplate = (point) => {
+  const {
+    dateFrom,
+    dateTo,
+    basePrice,
+    type,
+    info,
+    offers,
   } = point;
+
+  const typesCheckboxTemplate = TYPES.map((item, index) => {
+    return `
+    <div class="event__type-item">
+      <input
+        id="event-type-${item.toLowerCase()}-${index}"
+        class="event__type-input  visually-hidden"
+        type="radio" name="event-type"
+        value="${item.toLowerCase()}"
+      />
+      <label
+      class="event__type-label  event__type-label--${item.toLowerCase()}"
+      for="event-type-${item.toLowerCase()}-${index}">
+        ${item}
+      </label>
+    </div>
+    `;
+  }).join('\n');
 
   const offersCheckboxTemplate = OFFERS.map((item, index) => {
     const isCheckedOffer = offers.map((offer) => offer.shortName).includes(item.shortName);
@@ -210,3 +220,26 @@ export const createTripEventsEditTemplate = (point = {}) => {
   </li>
   `;
 };
+
+export default class EventEdit {
+  constructor(point = BLANK_EVENT) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createDOMElementFromMarkup(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

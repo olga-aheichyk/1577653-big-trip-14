@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
 
+const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
 const getDuration = (from, to) => {
   const durationInMinutes = dayjs(to).diff(dayjs(from), 'minute');
   if (durationInMinutes < 60) {
@@ -31,7 +36,27 @@ const getDuration = (from, to) => {
 
 const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
 
+const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+const createDOMElementFromMarkup = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+  return newElement.firstElementChild;
+};
+
 export {
   getDuration,
-  sortByDateAscending
+  sortByDateAscending,
+  render,
+  RenderPosition,
+  createDOMElementFromMarkup
 };

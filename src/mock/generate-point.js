@@ -73,15 +73,15 @@ const OFFERS = [
   },
 ];
 
-const PHOTOS = [];
+let photos = [];
 const PHOTOS_COUNT = 10;
 const MAX_DATE_GAP = 30;
 
 const generatePhotosSrcArray = () => {
   for (let i = 1; i <= PHOTOS_COUNT; i++) {
-    PHOTOS.push(`http://picsum.photos/248/152?r=${i}`);
+    photos.push(`http://picsum.photos/248/152?r=${i}`);
   }
-  return PHOTOS;
+  return photos;
 };
 
 const generatePhoto = () => {
@@ -104,7 +104,7 @@ export const generatePoint = () => {
   const dayGap = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
 
   const dateFrom = dayjs().add(dayGap, 'day').toDate();
-  const dateTo = dayjs(dateFrom).add(getRandomInteger(30, 300), 'minute').toDate();
+  const dateTo = dayjs(dateFrom).add((getRandomInteger(3, 30) * 10), 'minute').toDate();
 
   return {
     type: getRandomElementFromArray(POINT_TYPES),
