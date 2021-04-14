@@ -73,11 +73,11 @@ const OFFERS = [
   },
 ];
 
-let photos = [];
 const PHOTOS_COUNT = 10;
 const MAX_DATE_GAP = 30;
 
 const generatePhotosSrcArray = () => {
+  const photos = [];
   for (let i = 1; i <= PHOTOS_COUNT; i++) {
     photos.push(`http://picsum.photos/248/152?r=${i}`);
   }
