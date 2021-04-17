@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { TYPES, OFFERS } from '../const.js';
-import { createDOMElementFromMarkup } from '../util.js';
+import AbstractClassView from './abstract-class.js';
 
 const BLANK_EVENT = {
   dateFrom: dayjs(),
@@ -221,25 +221,36 @@ const createEventEditTemplate = (point) => {
   `;
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractClassView {
   constructor(point = BLANK_EVENT) {
+    super();
     this._point = point;
-    this._element = null;
+
+    this._arrowClickHandler = this._arrowClickHandler.bind(this);
+    this._formSaveHandler = this._formSaveHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElementFromMarkup(this.getTemplate());
-    }
-
-    return this._element;
+  _arrowClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.arrowClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setArrowClickHandler(callback) {
+    this._callback.arrowClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._arrowClickHandler);
+  }
+
+  _formSaveHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveClick();
+  }
+
+  setSaveClickHandler(callback) {
+    this._callback.saveClick = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._saveClickHandler);
   }
 }

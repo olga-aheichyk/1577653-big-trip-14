@@ -43,21 +43,27 @@ const renderEvent = (eventListElement, eventItem) => {
     }
   };
 
-  eventItemComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventItemComponent.setArrowClickHandler(() => {
     openEventEdit();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventEditComponent.setArrowClickHandler(() => {
     closeEventEdit();
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.getElement().firstElementChild.addEventListener('submit', (evt) => {
+  eventEditComponent.setSaveClickHandler((evt) => {
     evt.preventDefault();
     closeEventEdit();
     document.removeEventListener('keydown', onEscKeyDown);
   });
+
+  // eventEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+  //   evt.preventDefault();
+  //   closeEventEdit();
+  //   document.removeEventListener('keydown', onEscKeyDown);
+  // });
 
   render(eventListElement, eventItemComponent.getElement(), RenderPosition.BEFOREEND);
 };
@@ -65,15 +71,16 @@ const renderEvent = (eventListElement, eventItem) => {
 render(tripMainElement, tripInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
 
 render(tripControlsNavigationElement, new NavigationView().getElement(), RenderPosition.BEFOREEND);
-render(tripControlsFiltersElement, new FiltersView(sortedPointsData).getElement(), RenderPosition.BEFOREEND);
+
 render(tripEventsElement, new SortView().getElement(), RenderPosition.BEFOREEND);
 render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
 
-if (pointsData.length === 0 || !pointsData) {
+if (!pointsData.length) {
   render(tripEventsElement, new NewEventView().getElement(), RenderPosition.BEFOREEND);
 }
 
 else {
+  render(tripControlsFiltersElement, new FiltersView(sortedPointsData).getElement(), RenderPosition.BEFOREEND);
   render(tripInfoComponent.getElement(), new TripInfoMainView(sortedPointsData).getElement(), RenderPosition.BEFOREEND);
   render(tripInfoComponent.getElement(), new TripInfoCostView(sortedPointsData).getElement(), RenderPosition.BEFOREEND);
 

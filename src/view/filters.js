@@ -1,8 +1,8 @@
-import { createDOMElementFromMarkup } from '../util.js';
+import AbstractClassView from './abstract-class.js';
 import dayjs from 'dayjs';
 
 const createFiltersTemplate = (points) => {
-  if (points || points.length !== 0) {
+  if (points.length) {
     const pointsFuture = points.filter((item) => dayjs(item.dateFrom).isAfter(dayjs(), 'day'));
     const pointsPast = points.filter((item) => dayjs(item.dateFrom).isBefore(dayjs(), 'day'));
 
@@ -31,25 +31,13 @@ const createFiltersTemplate = (points) => {
   return '';
 };
 
-export default class Filters {
+export default class Filters extends AbstractClassView {
   constructor(points = []) {
+    super();
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createFiltersTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElementFromMarkup(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
