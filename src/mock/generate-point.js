@@ -2,7 +2,7 @@ import {
   getRandomInteger,
   getRandomElementFromArray,
   makeRandomArray
-} from '../util.js';
+} from './utils.js';
 
 import dayjs from 'dayjs';
 
@@ -27,6 +27,13 @@ const DESCRIPTIONS = [
   'Nunc fermentum tortor ac porta dapibus. ',
   'In rutrum ac purus sit amet tempus. ',
 ];
+
+// const OFFERS_OF_TYPE = [
+//   {
+//     type: "taxi",
+//     offers: [5, 6]
+//   }
+// ]
 
 const OFFERS = [
   {
@@ -54,17 +61,27 @@ const OFFERS = [
     price: 40,
     shortName: 'train',
   },
+  {
+    name: 'Upgrade to a business class',
+    price: 120,
+    shortName: 'business',
+  },
+  {
+    name: 'Choose the radio station',
+    price: 60,
+    shortName: 'radio',
+  },
 ];
 
-const PHOTOS = [];
 const PHOTOS_COUNT = 10;
 const MAX_DATE_GAP = 30;
 
 const generatePhotosSrcArray = () => {
+  const photos = [];
   for (let i = 1; i <= PHOTOS_COUNT; i++) {
-    PHOTOS.push(`http://picsum.photos/248/152?r=${i}`);
+    photos.push(`http://picsum.photos/248/152?r=${i}`);
   }
-  return PHOTOS;
+  return photos;
 };
 
 const generatePhoto = () => {
@@ -87,7 +104,7 @@ export const generatePoint = () => {
   const dayGap = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
 
   const dateFrom = dayjs().add(dayGap, 'day').toDate();
-  const dateTo = dayjs(dateFrom).add(getRandomInteger(30, 300), 'minute').toDate();
+  const dateTo = dayjs(dateFrom).add((getRandomInteger(3, 30) * 10), 'minute').toDate();
 
   return {
     type: getRandomElementFromArray(POINT_TYPES),

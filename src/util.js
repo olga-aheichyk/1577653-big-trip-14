@@ -1,42 +1,8 @@
 import dayjs from 'dayjs';
 
-/**
- * Функция получения случайного целого числа из диапазона включительно
- * @param {number} min — минимальное значение
- * @param {number} max — максимальное значение
- * @return {number|false} — случайное число
- */
-const getRandomInteger = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  const randomNumber = Math.random() * (max - min + 1) + min;
-  return Math.floor(randomNumber);
-};
-
-/**
- * Функция получения случайного элемента из массива строк
- * @param {array} array — исходный массив строк
- * @return {string} — случайная строка
- */
-const getRandomElementFromArray = (array) => {
-  return array[getRandomInteger(0, array.length - 1)];
-};
-
-/**
- * Функция получения массива случайной длины из массива строк
- * @param {array} array — исходный массив строк
- * @return {array} — полученный массив случайной длины
- */
-const makeRandomArray = (array) => {
-  const randomArray = [];
-
-  array.forEach((element) => {
-    if (Math.random() < 0.5) {
-      randomArray.push(element);
-    }
-  });
-
-  return randomArray;
+const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
 };
 
 const getDuration = (from, to) => {
@@ -68,9 +34,29 @@ const getDuration = (from, to) => {
   }
 };
 
+const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
+
+const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+const createDOMElementFromMarkup = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+  return newElement.firstElementChild;
+};
+
 export {
-  getRandomInteger,
-  getRandomElementFromArray,
-  makeRandomArray,
-  getDuration
+  getDuration,
+  sortByDateAscending,
+  render,
+  RenderPosition,
+  createDOMElementFromMarkup
 };
