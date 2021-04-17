@@ -234,8 +234,7 @@ export default class EventEdit extends AbstractClassView {
     return createEventEditTemplate(this._point);
   }
 
-  _arrowClickHandler(evt) {
-    evt.preventDefault();
+  _arrowClickHandler() {
     this._callback.arrowClick();
   }
 
@@ -251,6 +250,6 @@ export default class EventEdit extends AbstractClassView {
 
   setSaveClickHandler(callback) {
     this._callback.saveClick = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._saveClickHandler);
+    this.getElement().querySelector('form').addEventListener('submit', this._formSaveHandler);
   }
 }

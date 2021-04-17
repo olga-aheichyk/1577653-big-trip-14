@@ -90,8 +90,7 @@ export default class EventItem extends AbstractClassView {
     return createEventItemTemplate(this._point);
   }
 
-  _arrowClickHandler(evt) {
-    evt.preventDefault();
+  _arrowClickHandler() {
     this._callback.arrowClick();
   }
 

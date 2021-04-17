@@ -53,17 +53,10 @@ const renderEvent = (eventListElement, eventItem) => {
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.setSaveClickHandler((evt) => {
-    evt.preventDefault();
+  eventEditComponent.setSaveClickHandler(() => {
     closeEventEdit();
     document.removeEventListener('keydown', onEscKeyDown);
   });
-
-  // eventEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
-  //   evt.preventDefault();
-  //   closeEventEdit();
-  //   document.removeEventListener('keydown', onEscKeyDown);
-  // });
 
   render(eventListElement, eventItemComponent.getElement(), RenderPosition.BEFOREEND);
 };
