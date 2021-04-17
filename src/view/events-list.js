@@ -1,4 +1,4 @@
-import { createDOMElementFromMarkup } from '../util.js';
+import AbstractClassView from './abstract-class.js';
 
 const createEventsListTemplate = () => {
   return `
@@ -6,25 +6,9 @@ const createEventsListTemplate = () => {
   `;
 };
 
-export default class EventsList {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventsList extends AbstractClassView {
   getTemplate() {
     return createEventsListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElementFromMarkup(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 dayjs.extend(minMax);
-import { createDOMElementFromMarkup } from '../util.js';
+import AbstractClassView from './abstract-class.js';
 
 const createTripInfoMainTemplate = (points) => {
   if (points) {
@@ -29,25 +29,13 @@ const createTripInfoMainTemplate = (points) => {
   return '';
 };
 
-export default class TripInfoMain {
+export default class TripInfoMain extends AbstractClassView {
   constructor(points) {
+    super();
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoMainTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createDOMElementFromMarkup(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
