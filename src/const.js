@@ -37,7 +37,11 @@ const OFFERS = [
   },
 ];
 
+const TRIP_EVENTS_COUNT = 15;
+
+
 export {
   TYPES,
-  OFFERS
+  OFFERS,
+  TRIP_EVENTS_COUNT
 };

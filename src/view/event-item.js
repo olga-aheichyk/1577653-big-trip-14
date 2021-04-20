@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getDuration } from '../util.js';
+import { getDuration } from '../utils/data-processing.js';
 import AbstractClassView from './abstract-class.js';
 
 const createEventItemTemplate = (point) => {
@@ -83,19 +83,19 @@ export default class EventItem extends AbstractClassView {
     super();
     this._point = point;
 
-    this._arrowClickHandler = this._arrowClickHandler.bind(this);
+    this._handleArrowClick = this._handleArrowClick.bind(this);
   }
 
   getTemplate() {
     return createEventItemTemplate(this._point);
   }
 
-  _arrowClickHandler() {
+  _handleArrowClick() {
     this._callback.arrowClick();
   }
 
   setArrowClickHandler(callback) {
     this._callback.arrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._arrowClickHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleArrowClick);
   }
 }

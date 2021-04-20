@@ -1,4 +1,4 @@
-import { createDOMElementFromMarkup } from '../util.js';
+import { createDOMElementFromMarkup } from '../utils/render.js';
 
 export default class AbstractClass {
   constructor() {

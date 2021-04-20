@@ -6,7 +6,7 @@ const createNewEventCreationTemplate = () => {
   `;
 };
 
-export default class NewEvent extends AbstractClassView {
+export default class NoEvent extends AbstractClassView {
   getTemplate() {
     return createNewEventCreationTemplate();
   }

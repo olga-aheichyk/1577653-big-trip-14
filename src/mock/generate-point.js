@@ -100,7 +100,7 @@ const generateInfo = () => {
 };
 
 
-export const generatePoint = () => {
+const generatePoint = () => {
   const dayGap = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
 
   const dateFrom = dayjs().add(dayGap, 'day').toDate();
@@ -116,4 +116,9 @@ export const generatePoint = () => {
     dateFrom,
     dateTo,
   };
+};
+
+export const generatePoints = (count) => {
+  const data = new Array(count).fill().map(() => generatePoint());
+  return data;
 };

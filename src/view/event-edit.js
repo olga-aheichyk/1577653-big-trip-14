@@ -226,30 +226,30 @@ export default class EventEdit extends AbstractClassView {
     super();
     this._point = point;
 
-    this._arrowClickHandler = this._arrowClickHandler.bind(this);
-    this._formSaveHandler = this._formSaveHandler.bind(this);
+    this._handleArrowClick = this._handleArrowClick.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._point);
   }
 
-  _arrowClickHandler() {
+  _handleArrowClick() {
     this._callback.arrowClick();
   }
 
   setArrowClickHandler(callback) {
     this._callback.arrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._arrowClickHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleArrowClick);
   }
 
-  _formSaveHandler(evt) {
+  _handleFormSubmit(evt) {
     evt.preventDefault();
-    this._callback.saveClick();
+    this._callback.submitClick();
   }
 
-  setSaveClickHandler(callback) {
-    this._callback.saveClick = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSaveHandler);
+  setFormSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
   }
 }
