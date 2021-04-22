@@ -29,6 +29,7 @@ const createEventItemTemplate = (point) => {
     if (isFavorite) {
       return 'event__favorite-btn--active';
     }
+    return '';
   };
 
   return `
@@ -84,6 +85,7 @@ export default class EventItem extends AbstractClassView {
     this._point = point;
 
     this._handleArrowClick = this._handleArrowClick.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
   getTemplate() {
@@ -97,5 +99,16 @@ export default class EventItem extends AbstractClassView {
   setArrowClickHandler(callback) {
     this._callback.arrowClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleArrowClick);
+  }
+
+  _handleFavoriteClick(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+    // console.log(this.getElement());
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._handleFavoriteClick);
   }
 }
