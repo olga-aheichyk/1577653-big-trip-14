@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getDuration } from '../util.js';
+import { getDuration } from '../utils/data-processing.js';
 import AbstractClassView from './abstract-class.js';
 
 const createEventItemTemplate = (point) => {
@@ -29,6 +29,7 @@ const createEventItemTemplate = (point) => {
     if (isFavorite) {
       return 'event__favorite-btn--active';
     }
+    return '';
   };
 
   return `
@@ -83,19 +84,31 @@ export default class EventItem extends AbstractClassView {
     super();
     this._point = point;
 
-    this._arrowClickHandler = this._arrowClickHandler.bind(this);
+    this._handleArrowClick = this._handleArrowClick.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
   getTemplate() {
     return createEventItemTemplate(this._point);
   }
 
-  _arrowClickHandler() {
+  _handleArrowClick() {
     this._callback.arrowClick();
   }
 
   setArrowClickHandler(callback) {
     this._callback.arrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._arrowClickHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleArrowClick);
+  }
+
+  _handleFavoriteClick(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+    // console.log(this.getElement());
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._handleFavoriteClick);
   }
 }

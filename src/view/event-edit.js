@@ -26,67 +26,76 @@ const createEventEditTemplate = (point) => {
     type,
     info,
     offers,
+    id,
   } = point;
 
-  const typesCheckboxTemplate = TYPES.map((item, index) => {
-    return `
-    <div class="event__type-item">
-      <input
-        id="event-type-${item.toLowerCase()}-${index}"
-        class="event__type-input  visually-hidden"
-        type="radio" name="event-type"
-        value="${item.toLowerCase()}"
-      />
-      <label
-      class="event__type-label  event__type-label--${item.toLowerCase()}"
-      for="event-type-${item.toLowerCase()}-${index}">
-        ${item}
-      </label>
-    </div>
-    `;
-  }).join('\n');
+  const createTypesCheckboxTemplate = (id) => {
+    const typesCheckboxTemplate = TYPES.map((item) => {
+      return `
+      <div class="event__type-item">
+        <input
+          id="event-type-${item.toLowerCase()}-${id}"
+          class="event__type-input  visually-hidden"
+          type="radio" name="event-type"
+          value="${item.toLowerCase()}"
+        />
+        <label
+        class="event__type-label  event__type-label--${item.toLowerCase()}"
+        for="event-type-${item.toLowerCase()}-${id}">
+          ${item}
+        </label>
+      </div>
+      `;
+    }).join('\n');
 
-  const offersCheckboxTemplate = OFFERS.map((item, index) => {
-    const isCheckedOffer = offers.map((offer) => offer.shortName).includes(item.shortName);
+    return typesCheckboxTemplate;
+  };
 
-    if (isCheckedOffer) {
+  const createOffersCheckboxTemplate = (id) => {
+    const offersCheckboxTemplate = OFFERS.map((item) => {
+      const isCheckedOffer = offers.map((offer) => offer.shortName).includes(item.shortName);
+
+      if (isCheckedOffer) {
+        return `
+        <div class="event__offer-selector">
+          <input
+            class="event__offer-checkbox  visually-hidden"
+            id="event-offer-${item.shortName}-${id}"
+            type="checkbox"
+            name="event-offer-${item.shortName}" checked
+          />
+          <label
+            class="event__offer-label"
+            for="event-offer-${item.shortName}-${id}">
+              <span class="event__offer-title">${item.name}</span>
+                &plus;&euro;&nbsp;
+              <span class="event__offer-price">${item.price}</span>
+          </label>
+        </div>
+        `;
+      }
+
       return `
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${item.shortName}-${index}"
+          id="event-offer-${item.shortName}-${id}"
           type="checkbox"
-          name="event-offer-${item.shortName}" checked
-        />
+          name="event-offer-${item.shortName}"
+          />
         <label
           class="event__offer-label"
-          for="event-offer-${item.shortName}-${index}">
+          for="event-offer-${item.shortName}-1">
             <span class="event__offer-title">${item.name}</span>
               &plus;&euro;&nbsp;
             <span class="event__offer-price">${item.price}</span>
         </label>
       </div>
       `;
-    }
+    }).join('\n');
 
-    return `
-    <div class="event__offer-selector">
-      <input
-        class="event__offer-checkbox  visually-hidden"
-        id="event-offer-${item.shortName}-${index}"
-        type="checkbox"
-        name="event-offer-${item.shortName}"
-        />
-      <label
-        class="event__offer-label"
-        for="event-offer-${item.shortName}-1">
-          <span class="event__offer-title">${item.name}</span>
-            &plus;&euro;&nbsp;
-          <span class="event__offer-price">${item.price}</span>
-      </label>
-    </div>
-    `;
-  }).join('\n');
+    return offersCheckboxTemplate;
+  };
 
   const createDestinationTemplate = () => {
 
@@ -132,17 +141,17 @@ const createEventEditTemplate = (point) => {
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
 
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox"/>
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox"/>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${typesCheckboxTemplate}
+              ${createTypesCheckboxTemplate(id)}
             </fieldset>
           </div>
         </div>
@@ -211,7 +220,7 @@ const createEventEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offersCheckboxTemplate}
+            ${createOffersCheckboxTemplate(id)}
           </div>
         </section>
         ${createDestinationTemplate()}
@@ -226,30 +235,31 @@ export default class EventEdit extends AbstractClassView {
     super();
     this._point = point;
 
-    this._arrowClickHandler = this._arrowClickHandler.bind(this);
-    this._formSaveHandler = this._formSaveHandler.bind(this);
+    this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._point);
   }
 
-  _arrowClickHandler() {
-    this._callback.arrowClick();
-  }
-
-  setArrowClickHandler(callback) {
-    this._callback.arrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._arrowClickHandler);
-  }
-
-  _formSaveHandler(evt) {
+  _handleEditArrowClick(evt) {
     evt.preventDefault();
-    this._callback.saveClick();
+    this._callback.editArrowClick();
   }
 
-  setSaveClickHandler(callback) {
-    this._callback.saveClick = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSaveHandler);
+  setEditArrowClickHandler(callback) {
+    this._callback.editArrowClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleEditArrowClick);
+  }
+
+  _handleFormSubmit(evt) {
+    evt.preventDefault();
+    this._callback.submitClick();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
   }
 }
