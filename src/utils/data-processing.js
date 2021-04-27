@@ -29,13 +29,6 @@ const getDuration = (from, to) => {
   }
 };
 
-const sortData = (data) => {
-  const sortByDateAscending = (a, b) => new Date(a) - new Date(b);
-
-  const sortedData = data.sort((a, b) => sortByDateAscending(a.dateFrom, b.dateFrom));
-  return sortedData;
-};
-
 const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 
@@ -50,9 +43,15 @@ const updateItem = (items, update) => {
   ];
 };
 
+const sortByDateAscending = (a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom));
+const sortByDurationDescending = (a, b) => (dayjs(a.dateFrom).diff(dayjs(a.dateTo))) - (dayjs(b.dateFrom).diff(dayjs(b.dateTo)));
+const sortByPriceDescending = (a, b) => b.basePrice - a.basePrice;
+
 
 export {
   getDuration,
-  sortData,
-  updateItem
+  updateItem,
+  sortByDateAscending,
+  sortByPriceDescending,
+  sortByDurationDescending
 };

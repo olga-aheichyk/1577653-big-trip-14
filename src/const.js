@@ -37,11 +37,15 @@ const OFFERS = [
   },
 ];
 
-const TRIP_EVENTS_COUNT = 15;
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
 
 
 export {
   TYPES,
   OFFERS,
-  TRIP_EVENTS_COUNT
+  SortType
 };

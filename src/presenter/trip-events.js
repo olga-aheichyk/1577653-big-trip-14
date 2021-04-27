@@ -3,12 +3,14 @@ import EventsListView from '../view/events-list.js';
 import NoEventView from '../view/no-event.js';
 import PointPresenter from '../presenter/point.js';
 import { render, RenderPosition } from '../utils/render.js';
-import { updateItem } from '../utils/data-processing.js';
+import { updateItem, sortByDurationDescending, sortByDateAscending, sortByPriceDescending } from '../utils/data-processing.js';
+import { SortType } from '../const.js';
 
 export default class TripEvents {
   constructor(tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
     this._pointPresenter = {};
+    this._currentSortType = SortType.DAY;
 
     this._sortComponent = new SortView();
     this._eventListComponent = new EventsListView();
@@ -16,10 +18,14 @@ export default class TripEvents {
 
     this._handleEventChange = this._handleEventChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(pointsData) {
     this._pointsData = pointsData;
+    this._sortPoints();
+
+    // this._sourcedPointsData = pointsData.slice();
 
     render(this._tripEventsContainer, this._eventListComponent, RenderPosition.BEFOREEND);
 
@@ -27,7 +33,11 @@ export default class TripEvents {
   }
 
   _handleEventChange(updatedPoint) {
+    // console.log('До изменения');
+    // console.log(this._pointsData.find((prevEventItem) => prevEventItem.id === updatedPoint.id));
     this._pointsData = updateItem(this._pointsData, updatedPoint);
+    // console.log('После изменения');
+    // console.log(updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }
 
@@ -37,8 +47,36 @@ export default class TripEvents {
       .forEach((pointPresenter) => pointPresenter.resetView());
   }
 
+  _sortPoints(sortType = SortType.DAY) {
+    this._currentSortType = sortType;
+
+    switch (sortType) {
+      case SortType.DAY:
+        this._pointsData.sort((a, b) => sortByDateAscending(a, b));
+        break;
+      case SortType.TIME:
+        this._pointsData.sort((a, b) => sortByDurationDescending(a, b));
+        break;
+      case SortType.PRICE:
+        this._pointsData.sort((a, b) => sortByPriceDescending(a, b));
+        break;
+    }
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortPoints(sortType);
+    this._clearListOfEvents();
+    this._renderListOfEvents();
+
+  }
+
   _renderSort() {
     render(this._tripEventsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderEvent(point) {
