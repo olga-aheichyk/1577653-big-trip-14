@@ -4,6 +4,8 @@ dayjs.extend(minMax);
 import AbstractClassView from './abstract-class.js';
 import { sortByDateAscending } from '../utils/data-processing.js';
 
+const TITLE_CITIES_COUNT = 3;
+
 const createTripInfoMainTemplate = (points) => {
   if (points) {
     const tripCitiesArray = points
@@ -15,16 +17,13 @@ const createTripInfoMainTemplate = (points) => {
     // const tripCitiesSet = new Set(tripCitiesArray);
     // const uniqueTripCities = Array.from(tripCitiesSet);
 
-    let title;
-
-    if (tripCitiesArray.length > 3) {
-      title = `${tripCitiesArray[0]} &mdash; ... &mdash; ${tripCitiesArray[tripCitiesArray.length - 1]}`;
-    }
-
-    else {
-      title = Array.from(new Set(tripCitiesArray))
+    const title =
+    tripCitiesArray.length > TITLE_CITIES_COUNT
+      ?
+      `${tripCitiesArray[0]} &mdash; ... &mdash; ${tripCitiesArray[tripCitiesArray.length - 1]}`
+      :
+      Array.from(new Set(tripCitiesArray))
         .join(' &mdash; ');
-    }
 
     const arrayFromStartDates = points.map((point) => dayjs(point.dateFrom));
     const arrayFromEndDates = points.map((point) => dayjs(point.dateTo));
