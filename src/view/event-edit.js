@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import { TYPES, OFFERS } from '../const.js';
-import AbstractClassView from './abstract-class.js';
+import { TYPES, OFFERS_OF_TYPE } from '../const.js';
+// import AbstractClassView from './abstract-class.js';
+import SmartClassView from './smart-class.js';
 
 const BLANK_EVENT = {
   dateFrom: dayjs(),
@@ -51,23 +52,24 @@ const createEventEditTemplate = (point) => {
     return typesCheckboxTemplate;
   };
 
-  const createOffersCheckboxTemplate = (id) => {
-    const offersCheckboxTemplate = OFFERS.map((item) => {
-      const isCheckedOffer = offers.map((offer) => offer.shortName).includes(item.shortName);
+  const createOffersCheckboxTemplate = (type, id) => {
+    //console.log(OFFERS_OF_TYPE[type]);
+    const offersCheckboxTemplate = OFFERS_OF_TYPE[type].map((item) => {
+      const isCheckedOffer = offers.map((offer) => offer.name).includes(item.name);
 
       if (isCheckedOffer) {
         return `
         <div class="event__offer-selector">
           <input
             class="event__offer-checkbox  visually-hidden"
-            id="event-offer-${item.shortName}-${id}"
+            id="event-offer-${item.name}-${id}"
             type="checkbox"
-            name="event-offer-${item.shortName}" checked
+            name="event-offer-${item.name}" checked
           />
           <label
             class="event__offer-label"
-            for="event-offer-${item.shortName}-${id}">
-              <span class="event__offer-title">${item.name}</span>
+            for="event-offer-${item.name}-${id}">
+              <span class="event__offer-title">${item.title}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${item.price}</span>
           </label>
@@ -79,14 +81,14 @@ const createEventEditTemplate = (point) => {
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${item.shortName}-${id}"
+          id="event-offer-${item.name}-${id}"
           type="checkbox"
-          name="event-offer-${item.shortName}"
+          name="event-offer-${item.name}"
           />
         <label
           class="event__offer-label"
-          for="event-offer-${item.shortName}-1">
-            <span class="event__offer-title">${item.name}</span>
+          for="event-offer-${item.name}-${id}">
+            <span class="event__offer-title">${item.title}</span>
               &plus;&euro;&nbsp;
             <span class="event__offer-price">${item.price}</span>
         </label>
@@ -220,7 +222,7 @@ const createEventEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersCheckboxTemplate(id)}
+            ${createOffersCheckboxTemplate(type, id)}
           </div>
         </section>
         ${createDestinationTemplate()}
@@ -230,21 +232,24 @@ const createEventEditTemplate = (point) => {
   `;
 };
 
-export default class EventEdit extends AbstractClassView {
+export default class EventEdit extends SmartClassView {
   constructor(point = BLANK_EVENT) {
     super();
     this._point = point;
 
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+
+    this._handleTypeChange = this._handleTypeChange.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createEventEditTemplate(this._point);
   }
 
-  _handleEditArrowClick(evt) {
-    evt.preventDefault();
+  _handleEditArrowClick() {
     this._callback.editArrowClick();
   }
 
@@ -262,4 +267,24 @@ export default class EventEdit extends AbstractClassView {
     this._callback.submitClick = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
   }
+
+  _handleTypeChange(evt) {
+    // evt.preventDefault()
+    this.updateData({
+      type: evt.target.value,
+    });
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-group')
+      .addEventListener('change', this._handleTypeChange);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.submitClick);
+    this.setEditArrowClickHandler(this._callback.editArrowClick);
+  }
+
 }

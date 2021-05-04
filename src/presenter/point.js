@@ -11,16 +11,16 @@ export default class Point {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._mode = Mode.DEFAULT;
 
     this._eventItemComponent = null;
     this._eventEditComponent = null;
-    this._mode = Mode.DEFAULT;
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleArrowClick = this._handleArrowClick.bind(this);
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
   }
 
   init(point) {
@@ -68,18 +68,18 @@ export default class Point {
 
   _openEventEdit() {
     replace(this._eventEditComponent, this._eventItemComponent);
-    document.addEventListener('keydown', this._escKeyDownHandler);
+    document.addEventListener('keydown', this._handleEscKeyDown);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
   _closeEventEdit() {
     replace(this._eventItemComponent, this._eventEditComponent);
-    document.removeEventListener('keydown', this._escKeyDownHandler);
+    document.removeEventListener('keydown', this._handleEscKeyDown);
     this._mode = Mode.DEFAULT;
   }
 
-  _escKeyDownHandler(evt) {
+  _handleEscKeyDown(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this._closeEventEdit();

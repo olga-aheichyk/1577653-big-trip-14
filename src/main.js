@@ -5,6 +5,7 @@ import { generatePoints } from './mock/generate-point.js';
 const TRIP_EVENTS_COUNT = 15;
 
 const pointsData = generatePoints(TRIP_EVENTS_COUNT);
+// console.log(pointsData);
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsNavigationElement = document.querySelector('.trip-controls__navigation');

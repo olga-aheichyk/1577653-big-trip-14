@@ -13,7 +13,7 @@ const getRandomInteger = (min, max) => {
 
 /**
  * Функция получения случайного элемента из массива строк
- * @param {array} array — исходный массив строк
+ * @param {array} array — исходный массив
  * @return {string} — случайная строка
  */
 const getRandomElementFromArray = (array) => {
