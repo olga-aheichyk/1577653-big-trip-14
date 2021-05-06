@@ -106,8 +106,8 @@ export default class Point {
     this._closeEventEdit();
   }
 
-  _handleFormSubmit() {
-    this._changeData(this._point);
+  _handleFormSubmit(point) {
+    this._changeData(point);
     this._closeEventEdit();
   }
 }

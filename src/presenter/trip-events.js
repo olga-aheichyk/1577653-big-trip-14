@@ -79,17 +79,18 @@ export default class TripEvents {
   _renderTripEvents() {
     if (!this._pointsData.length) {
       this._renderNoEvent();
+      return;
     }
-    else {
-      this._renderSort();
-      this._renderListOfEvents();
-    }
+    this._renderSort();
+    this._renderListOfEvents();
   }
 
   _handleEventChange(updatedPoint) {
     // console.log('До изменения');
     // console.log(this._pointsData.find((prevEventItem) => prevEventItem.id === updatedPoint.id));
+
     this._pointsData = updateItem(this._pointsData, updatedPoint);
+
     // console.log('После изменения');
     // console.log(updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
@@ -109,6 +110,5 @@ export default class TripEvents {
     this._sortPoints(sortType);
     this._clearListOfEvents();
     this._renderListOfEvents();
-
   }
 }
