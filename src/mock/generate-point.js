@@ -4,11 +4,10 @@ import {
   makeRandomArray
 } from './utils.js';
 
+import { TYPES, OFFERS_OF_TYPE } from '../const.js'
+
 import dayjs from 'dayjs';
-
 import { nanoid } from 'nanoid';
-
-const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'transport', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const CITYES = [
   'Paris', 'Rome', 'Barcelona', 'Berlin', 'Venecia', 'Lissabon', 'Geneva', 'Amsterdam', 'Praha', 'Tallin',
@@ -28,56 +27,6 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus. ',
 ];
 
-const OFFERS = {
-  lugagge: {
-    title: 'Add luggage', // name
-    price: 30,
-    name: 'lugagge',
-  },
-  comfort: {
-    title: 'Switch to comfort class',
-    price: 100,
-    name: 'comfort',
-  },
-  meal: {
-    title: 'Add meal',
-    price: 15,
-    name: 'meal',
-  },
-  seats: {
-    title: 'Choose seats',
-    price: 5,
-    name: 'seats',
-  },
-  train: {
-    title: 'Travel by train',
-    price: 40,
-    name: 'train',
-  },
-  business: {
-    title: 'Upgrade to a business class',
-    price: 120,
-    name: 'business',
-  },
-  radio: {
-    title: 'Choose the radio station',
-    price: 60,
-    name: 'radio',
-  },
-};
-
-const OFFERS_OF_TYPE = {
-  taxi: [OFFERS.business, OFFERS.radio],
-  bus: [OFFERS.radio, OFFERS.seats, OFFERS.train],
-  train: [OFFERS.seats, OFFERS.meal, OFFERS.comfort],
-  ship: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  transport: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort, OFFERS.train],
-  drive: [OFFERS.comfort],
-  flight: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  'check-in': [],
-  sightseeing: [OFFERS.train, OFFERS.seats],
-  restaurant: [OFFERS.radio],
-};
 
 const PHOTOS_COUNT = 10;
 const MAX_DATE_GAP = 30;
@@ -101,6 +50,7 @@ const generateCityInfo = (city) => {
   return {
     name: city,
     description: makeRandomArray(DESCRIPTIONS).slice(0, (getRandomInteger(0, 5))).join(' '),
+    //description: makeRandomArray(DESCRIPTIONS).slice(0, 0).join(''),
     pictures: new Array(getRandomInteger(0, 5)).fill(null).map(generatePhoto),
   };
 };
@@ -112,7 +62,7 @@ const generatePoint = () => {
 
   const dateFrom = dayjs().add(dayGap, 'day').toDate();
   const dateTo = dayjs(dateFrom).add((getRandomInteger(3, 30) * 10), 'minute').toDate();
-  const type = getRandomElementFromArray(POINT_TYPES);
+  const type = getRandomElementFromArray(TYPES).toLowerCase();
 
   return {
     type,

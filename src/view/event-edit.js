@@ -158,6 +158,17 @@ const createEventEditTemplate = (state) => {
     return '';
   };
 
+  const createEventDetailsTemplate = () => {
+    if (hasOffers || hasDescription || hasImages) {
+      return `
+        <section class="event__details">
+          ${createOffersCheckboxTemplate(type, id)}
+          ${createDestinationTemplate()}
+        </section>`
+    }
+    return '';
+  }
+
   return `
   <li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -237,10 +248,7 @@ const createEventEditTemplate = (state) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
-      <section class="event__details">
-        ${createOffersCheckboxTemplate(type, id)}
-        ${createDestinationTemplate()}
-      </section>
+      ${createEventDetailsTemplate()}
     </form>
   </li>
   `;
@@ -265,6 +273,12 @@ export default class EventEdit extends SmartClassView {
     return createEventEditTemplate(this._state);
   }
 
+  reset(point) {
+    this.updateData(
+      EventEdit.parsePointToState(point)
+    );
+  }
+
   _handleEditArrowClick() {
     this._callback.editArrowClick();
   }
@@ -285,6 +299,7 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleTypeChange(evt) {
+    evt.preventDefault();
     this.updateData({
       type: evt.target.value,
       hasOffers: OFFERS_OF_TYPE[evt.target.value].length !== 0,
@@ -292,14 +307,16 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleDestinationChange(evt) {
+    evt.preventDefault();
+    const cityIndex = cityInfoArray.findIndex((item) => item.name === evt.target.value);
     this.updateData({
       info: {
         name: evt.target.value,
-        description: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description,
-        pictures: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures,
+        description: cityInfoArray[cityIndex].description,
+        pictures: cityInfoArray[cityIndex].pictures,
       },
-      hasDescription: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description.length !== 0,
-      hasImages: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures.length !== 0,
+      hasDescription: cityInfoArray[cityIndex].description.length !== 0,
+      hasImages: cityInfoArray[cityIndex].pictures.length !== 0,
     });
   }
 
