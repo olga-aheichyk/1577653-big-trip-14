@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { TYPES, OFFERS_OF_TYPE } from '../const.js';
-// import AbstractClassView from './abstract-class.js';
+import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
 
 const BLANK_EVENT = {
@@ -19,7 +19,7 @@ const BLANK_EVENT = {
   offers: [],
 };
 
-const createEventEditTemplate = (point) => {
+const createEventEditTemplate = (state) => {
   const {
     dateFrom,
     dateTo,
@@ -28,7 +28,10 @@ const createEventEditTemplate = (point) => {
     info,
     offers,
     id,
-  } = point;
+    hasOffers,
+    hasDescription,
+    hasImages,
+  } = state;
 
   const createTypesCheckboxTemplate = (id) => {
     const typesCheckboxTemplate = TYPES.map((item) => {
@@ -53,7 +56,7 @@ const createEventEditTemplate = (point) => {
   };
 
   const createOffersCheckboxTemplate = (type, id) => {
-    //console.log(OFFERS_OF_TYPE[type]);
+
     const offersCheckboxTemplate = OFFERS_OF_TYPE[type].map((item) => {
       const isCheckedOffer = offers.map((offer) => offer.name).includes(item.name);
 
@@ -96,13 +99,21 @@ const createEventEditTemplate = (point) => {
       `;
     }).join('\n');
 
-    return offersCheckboxTemplate;
+    if (hasOffers) {
+      return `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${offersCheckboxTemplate}
+      </div>`;
+    }
+    return '';
   };
 
   const createDestinationTemplate = () => {
 
     const createImagesTemplate = () => {
-      if (info.pictures) {
+      if (hasImages) {
         const imagesMarkup = info.pictures.map((item) => {
           return `
           <img
@@ -124,13 +135,22 @@ const createEventEditTemplate = (point) => {
       return '';
     };
 
-    if (info.description) {
+    const createDescriptionTemplate = () => {
+      if (hasDescription) {
+        return `
+          <p class="event__destination-description">
+            ${info.description}
+          </p>`;
+      }
+
+      return '';
+    };
+
+    if (hasDescription || hasImages) {
       return `
       <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">${info.name}</h3>
-        <p class="event__destination-description">
-          ${info.description}
-        </p>
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        ${createDescriptionTemplate()}
         ${createImagesTemplate()}
       </section>
       `;
@@ -159,38 +179,38 @@ const createEventEditTemplate = (point) => {
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
+          <label class="event__label  event__type-output" for="event-destination-${id}">
             ${type}
           </label>
           <input
             class="event__input  event__input--destination"
-            id="event-destination-1"
+            id="event-destination-${id}"
             type="text"
             name="event-destination"
             value="${info.name}"
-            list="destination-list-1"
+            list="destination-list-${id}"
           />
-          <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+          <datalist id="destination-list-${id}">
+            <option value="Paris"></option>
+            <option value="Rome"></option>
+            <option value="Barcelona"></option>
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">From</label>
+          <label class="visually-hidden" for="event-start-time-${id}">From</label>
           <input
             class="event__input  event__input--time"
-            id="event-start-time-1"
+            id="event-start-time-${id}"
             type="text"
             name="event-start-time"
             value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}"
           />
           &mdash;
-          <label class="visually-hidden" for="event-end-time-1">To</label>
+          <label class="visually-hidden" for="event-end-time-${id}">To</label>
           <input
             class="event__input  event__input--time"
-            id="event-end-time-1"
+            id="event-end-time-${id}"
             type="text"
             name="event-end-time"
             value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}"
@@ -198,13 +218,13 @@ const createEventEditTemplate = (point) => {
         </div>
 
         <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
+          <label class="event__label" for="event-price-${id}">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
           <input
             class="event__input  event__input--price"
-            id="event-price-1"
+            id="event-price-${id}"
             type="text"
             name="event-price"
             value="${basePrice}"
@@ -218,13 +238,7 @@ const createEventEditTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createOffersCheckboxTemplate(type, id)}
-          </div>
-        </section>
+        ${createOffersCheckboxTemplate(type, id)}
         ${createDestinationTemplate()}
       </section>
     </form>
@@ -235,18 +249,20 @@ const createEventEditTemplate = (point) => {
 export default class EventEdit extends SmartClassView {
   constructor(point = BLANK_EVENT) {
     super();
-    this._point = point;
+    // this._point = point;
+    this._state = EventEdit.parsePointToState(point);
 
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
 
     this._handleTypeChange = this._handleTypeChange.bind(this);
+    this._handleDestinationChange = this._handleDestinationChange.bind(this);
 
     this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._point);
+    return createEventEditTemplate(this._state);
   }
 
   _handleEditArrowClick() {
@@ -260,7 +276,7 @@ export default class EventEdit extends SmartClassView {
 
   _handleFormSubmit(evt) {
     evt.preventDefault();
-    this._callback.submitClick(this._point);
+    this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
   }
 
   setFormSubmitHandler(callback) {
@@ -269,9 +285,21 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleTypeChange(evt) {
-    // evt.preventDefault()
     this.updateData({
       type: evt.target.value,
+      hasOffers: OFFERS_OF_TYPE[evt.target.value].length !== 0,
+    });
+  }
+
+  _handleDestinationChange(evt) {
+    this.updateData({
+      info: {
+        name: evt.target.value,
+        description: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description,
+        pictures: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures,
+      },
+      hasDescription: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description.length !== 0,
+      hasImages: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures.length !== 0,
     });
   }
 
@@ -279,6 +307,10 @@ export default class EventEdit extends SmartClassView {
     this.getElement()
       .querySelector('.event__type-group')
       .addEventListener('change', this._handleTypeChange);
+
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this._handleDestinationChange);
   }
 
   restoreHandlers() {
@@ -287,4 +319,37 @@ export default class EventEdit extends SmartClassView {
     this.setEditArrowClickHandler(this._callback.editArrowClick);
   }
 
+  static parsePointToState(point) {
+    return Object.assign(
+      {},
+      point,
+      {
+        hasOffers: OFFERS_OF_TYPE[point.type].length !== 0,
+        hasDescription: point.info.description.length !== 0,
+        hasImages: point.info.pictures.length !==  0,
+      },
+    );
+  }
+
+  static parseStateToPoint(state) {
+    state = Object.assign({}, state);
+
+    if (!state.hasOffers) {
+      OFFERS_OF_TYPE[state.type] = [];
+    }
+
+    if (!state.hasDescription) {
+      state.info.description = '';
+    }
+
+    if (!state.hasImages) {
+      state.info.pictures = '';
+    }
+
+    delete state.hasOffers;
+    delete state.hasDescription;
+    delete state.hasImages;
+
+    return state;
+  }
 }

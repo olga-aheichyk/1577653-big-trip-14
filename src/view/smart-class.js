@@ -28,9 +28,9 @@ export default class SmartClass extends AbstractClass {
       return;
     }
 
-    this._point = Object.assign(
+    this._state = Object.assign(
       {},
-      this._point,
+      this._state,
       update,
     );
 

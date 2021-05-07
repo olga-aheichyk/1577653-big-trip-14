@@ -83,7 +83,7 @@ const OFFERS_OF_TYPE = {
   transport: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort, OFFERS.train],
   drive: [OFFERS.comfort],
   flight: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  'check-in': [OFFERS.business],
+  'check-in': [],
   sightseeing: [OFFERS.train, OFFERS.seats],
   restaurant: [OFFERS.radio],
 };

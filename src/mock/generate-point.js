@@ -74,7 +74,7 @@ const OFFERS_OF_TYPE = {
   transport: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort, OFFERS.train],
   drive: [OFFERS.comfort],
   flight: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  'check-in': [OFFERS.business],
+  'check-in': [],
   sightseeing: [OFFERS.train, OFFERS.seats],
   restaurant: [OFFERS.radio],
 };
@@ -100,13 +100,12 @@ const generatePhoto = () => {
 const generateCityInfo = (city) => {
   return {
     name: city,
-    description: makeRandomArray(DESCRIPTIONS).slice(0, 5).join(' '),
-    pictures: new Array(getRandomInteger(0, 5)).fill().map(generatePhoto),
+    description: makeRandomArray(DESCRIPTIONS).slice(0, (getRandomInteger(0, 5))).join(' '),
+    pictures: new Array(getRandomInteger(0, 5)).fill(null).map(generatePhoto),
   };
 };
 
-const cityInfoArray = CITYES.map((city) => generateCityInfo(city));
-// console.log(cityInfoArray);
+export const cityInfoArray = CITYES.map((city) => generateCityInfo(city));
 
 const generatePoint = () => {
   const dayGap = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
@@ -128,5 +127,5 @@ const generatePoint = () => {
 };
 
 export const generatePoints = (count) => {
-  return new Array(count).fill().map(() => generatePoint());
+  return new Array(count).fill(null).map(() => generatePoint());
 };
