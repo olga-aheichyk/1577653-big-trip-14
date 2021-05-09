@@ -7,10 +7,11 @@ import { render, RenderPosition } from '../utils/render.js';
 
 
 export default class TripMain {
-  constructor(tripMainContainer, navigationContainer, filtersContainer) {
+  constructor(tripMainContainer, navigationContainer, filtersContainer, pointsModel) {
     this._tripMainContainer = tripMainContainer;
     this._navigationContainer = navigationContainer;
     this._filtersContainer = filtersContainer;
+    this._pointsModel = pointsModel;
 
     this._tripInfoComponent = new TripInfoView();
     this._tripInfoMainComponent = null;
@@ -19,16 +20,20 @@ export default class TripMain {
     this._filtersComponent = null;
   }
 
-  init(pointsData) {
-    this._pointsData = pointsData;
+  init() {
+    // this._pointsData = pointsData;
 
-    this._tripInfoMainComponent = new TripInfoMainView(this._pointsData);
-    this._tripInfoCostComponent = new TripInfoCostView(this._pointsData);
-    this._filtersComponent = new FiltersView(this._pointsData);
+    this._tripInfoMainComponent = new TripInfoMainView(this._getPoints());
+    this._tripInfoCostComponent = new TripInfoCostView(this._getPoints());
+    this._filtersComponent = new FiltersView(this._getPoints());
 
     render(this._tripMainContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
 
     this._renderTripMain();
+  }
+
+  _getPoints() {
+    return this._pointsModel.getPoints();
   }
 
   _renderTripInfo() {
@@ -47,7 +52,7 @@ export default class TripMain {
   _renderTripMain() {
     this._renderNavigation();
 
-    if (this._pointsData.length) {
+    if (this._getPoints().length) {
       this._renderTripInfo();
       this._renderFilters();
     }
