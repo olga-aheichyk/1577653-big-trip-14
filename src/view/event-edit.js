@@ -268,6 +268,7 @@ export default class EventEdit extends SmartClassView {
 
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleFormDeleteClick = this._handleFormDeleteClick.bind(this);
 
     this._handleTypeChange = this._handleTypeChange.bind(this);
     this._handleDestinationChange = this._handleDestinationChange.bind(this);
@@ -281,6 +282,20 @@ export default class EventEdit extends SmartClassView {
 
   getTemplate() {
     return createEventEditTemplate(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerFrom) {
+      this._datepickerFrom.destroy();
+      this._datepickerFrom = null;
+    }
+
+    if (this._datepickerTo) {
+      this._datepickerTo.destroy();
+      this._datepickerTo = null;
+    }
   }
 
   reset(point) {
@@ -300,6 +315,7 @@ export default class EventEdit extends SmartClassView {
         this.getElement().querySelectorAll('.event__input--time')[0],
         {
           dateFormat: 'd/m/Y H:i',
+          // minDate: 'today',
           enableTime: true,
           allowInput: true,
           defaultDate: this._state.dateFrom,
@@ -378,10 +394,20 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleDateToChange([userDate]) {
-      this.updateData({
-        dateTo: userDate,
-      });
-    }
+    this.updateData({
+      dateTo: userDate,
+    });
+  }
+
+  _handleFormDeleteClick(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
+  }
+
+  setFormDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
+  }
 
   _setInnerHandlers() {
     this.getElement()
@@ -398,6 +424,7 @@ export default class EventEdit extends SmartClassView {
     this._setDatepickerFrom();
     this._setDatepickerTo();
     this.setFormSubmitHandler(this._callback.submitClick);
+    this.setFormDeleteClickHandler(this._callback.deleteClick);
     this.setEditArrowClickHandler(this._callback.editArrowClick);
   }
 

@@ -2,33 +2,27 @@ import TripInfoView from '../view/trip-info.js';
 import TripInfoMainView from '../view/trip-info-main.js';
 import TripInfoCostView from '../view/trip-info-cost.js';
 import NavigationView from '../view/navigation.js';
-import FiltersView from '../view/filters.js';
-import { render, RenderPosition } from '../utils/render.js';
-
-
+import { remove, render, RenderPosition } from '../utils/render.js';
+//import { UpdateType } from '../const.js';
 export default class TripMain {
-  constructor(tripMainContainer, navigationContainer, filtersContainer, pointsModel) {
-    this._tripMainContainer = tripMainContainer;
-    this._navigationContainer = navigationContainer;
-    this._filtersContainer = filtersContainer;
+  constructor(pointsModel) {
+    this._tripMainContainer = document.querySelector('.trip-main');
+    this._navigationContainer = document.querySelector('.trip-controls__navigation');
+
     this._pointsModel = pointsModel;
 
-    this._tripInfoComponent = new TripInfoView();
+    this._tripInfoComponent = new TripInfoView()
     this._tripInfoMainComponent = null;
     this._tripInfoCostComponent = null;
-    this._navigationComponent = new NavigationView();
-    this._filtersComponent = null;
+    this._navigationComponent = null;
+
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
-    // this._pointsData = pointsData;
-
-    this._tripInfoMainComponent = new TripInfoMainView(this._getPoints());
-    this._tripInfoCostComponent = new TripInfoCostView(this._getPoints());
-    this._filtersComponent = new FiltersView(this._getPoints());
-
     render(this._tripMainContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
-
     this._renderTripMain();
   }
 
@@ -37,16 +31,18 @@ export default class TripMain {
   }
 
   _renderTripInfo() {
+    const points = this._getPoints();
+
+    this._tripInfoMainComponent = new TripInfoMainView(points);
     render(this._tripInfoComponent, this._tripInfoMainComponent, RenderPosition.BEFOREEND);
+
+    this._tripInfoCostComponent = new TripInfoCostView(points);
     render(this._tripInfoComponent, this._tripInfoCostComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNavigation() {
+    this._navigationComponent = new NavigationView();
     render(this._navigationContainer, this._navigationComponent, RenderPosition.BEFOREEND);
-  }
-
-  _renderFilters() {
-    render(this._filtersContainer, this._filtersComponent, RenderPosition.BEFOREEND);
   }
 
   _renderTripMain() {
@@ -54,8 +50,18 @@ export default class TripMain {
 
     if (this._getPoints().length) {
       this._renderTripInfo();
-      this._renderFilters();
     }
+  }
+
+  _clearTripMain() {
+    remove(this._tripInfoMainComponent);
+    remove(this._tripInfoCostComponent);
+    remove(this._navigationComponent);
+  }
+
+  _handleModelEvent() {
+    this._clearTripMain();
+    this._renderTripMain();
   }
 }
 
