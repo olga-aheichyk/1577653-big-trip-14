@@ -117,8 +117,8 @@ export default class Point {
     this._changeData(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
-      point
-      );
+      point,
+    );
     this._closeEventEdit();
   }
 

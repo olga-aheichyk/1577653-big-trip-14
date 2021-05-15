@@ -75,18 +75,16 @@ const tripEventsFilter = {
     return points.slice().filter(
       (item) => dayjs(item.dateFrom).isBefore(dayjs(), 'day')
         || dayjs(item.dateFrom) === dayjs()
-        || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day')
+        || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day'),
     );
   },
   [FilterType.FUTURE]: (points) => {
     return points.slice().filter(
       (item) => dayjs(item.dateTo).isAfter(dayjs(), 'day')
-        || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day')
+        || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day'),
     );
   },
 };
-
-
 
 export {
   getDuration,

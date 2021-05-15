@@ -1,12 +1,10 @@
 import EventEditView from '../view/event-edit.js';
-import EventsListView from '../view/events-list.js';
 import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
 export default class NewPoint {
   constructor(eventListComponent, changeData) {
-    //this._tripEventsContainer = document.querySelector('.trip-events');
     this._eventListComponent = eventListComponent;
     this._changeData = changeData;
 
@@ -26,7 +24,6 @@ export default class NewPoint {
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setFormDeleteClickHandler(this._handleFormDeleteClick);
 
-    //render(this._tripEventsContainer, this._eventListComponent, RenderPosition.BEFOREEND);
     render(this._eventListComponent, this._eventEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this._handleEscKeyDown);

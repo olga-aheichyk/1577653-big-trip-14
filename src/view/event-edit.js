@@ -166,10 +166,10 @@ const createEventEditTemplate = (state) => {
         <section class="event__details">
           ${createOffersCheckboxTemplate(type, id)}
           ${createDestinationTemplate()}
-        </section>`
+        </section>`;
     }
     return '';
-  }
+  };
 
   return `
   <li class="trip-events__item">
@@ -298,7 +298,7 @@ export default class EventEdit extends SmartClassView {
 
   reset(point) {
     this.updateData(
-      EventEdit.parsePointToState(point)
+      EventEdit.parsePointToState(point),
     );
   }
 

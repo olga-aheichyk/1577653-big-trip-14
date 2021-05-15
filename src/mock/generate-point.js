@@ -4,7 +4,7 @@ import {
   makeRandomArray
 } from './utils.js';
 
-import { TYPES, OFFERS_OF_TYPE } from '../const.js'
+import { TYPES, OFFERS_OF_TYPE } from '../const.js';
 
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';

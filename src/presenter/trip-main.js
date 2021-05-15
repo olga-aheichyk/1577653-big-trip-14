@@ -11,7 +11,7 @@ export default class TripMain {
 
     this._pointsModel = pointsModel;
 
-    this._tripInfoComponent = new TripInfoView()
+    this._tripInfoComponent = new TripInfoView();
     this._tripInfoMainComponent = null;
     this._tripInfoCostComponent = null;
     this._navigationComponent = null;
