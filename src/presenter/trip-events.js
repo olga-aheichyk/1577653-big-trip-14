@@ -1,10 +1,11 @@
 import SortView from '../view/sort.js';
 import EventsListView from '../view/events-list.js';
 import NoEventView from '../view/no-event.js';
+import NewEventPresenter from '../presenter/new-event.js';
 import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 
 export default class TripEvents {
   constructor(pointsModel, filterModel) {
@@ -27,11 +28,19 @@ export default class TripEvents {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._newEventPresenter = new NewEventPresenter(this._eventListComponent, this._handleViewAction);
   }
 
   init() {
     render(this._tripEventsContainer, this._eventListComponent, RenderPosition.BEFOREEND);
     this._renderTripEvents();
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.DAY;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newEventPresenter.init();
   }
 
   _getPoints() {
@@ -90,6 +99,7 @@ export default class TripEvents {
   }
 
   _clearListOfEvents() {
+    this._newEventPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((pointPresenter) => pointPresenter.destroy());
@@ -136,6 +146,7 @@ export default class TripEvents {
   }
 
   _handleModeChange() {
+    this._newEventPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((pointPresenter) => pointPresenter.resetView());

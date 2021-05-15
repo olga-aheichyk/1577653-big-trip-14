@@ -6,7 +6,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 
 import { generatePoints } from './mock/generate-point.js';
 
-const TRIP_EVENTS_COUNT = 3;
+const TRIP_EVENTS_COUNT = 5;
 
 const pointsData = generatePoints(TRIP_EVENTS_COUNT);
 // console.log(pointsData);
@@ -25,3 +25,8 @@ filterPresenter.init()
 
 const tripEventsPresenter = new TripEventsPresenter(pointsModel, filterModel);
 tripEventsPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripEventsPresenter.createEvent();
+});

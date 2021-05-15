@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+//import he from 'he';
 import { TYPES, OFFERS_OF_TYPE } from '../const.js';
 import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
@@ -15,10 +16,7 @@ const BLANK_EVENT = {
   info: {
     name: '',
     description: '',
-    pictures: {
-      src: '',
-      description: '',
-    },
+    pictures: [],
   },
   offers: [],
 };
