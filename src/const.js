@@ -75,6 +75,13 @@ const FilterType = {
   PAST: 'past',
 };
 
+const NavigationItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
+const HIDE_CLASS = 'visually-hidden';
+
 export {
   TYPES,
   OFFERS,
@@ -82,5 +89,7 @@ export {
   SortType,
   UserAction,
   UpdateType,
-  FilterType
+  FilterType,
+  NavigationItem,
+  HIDE_CLASS
 };

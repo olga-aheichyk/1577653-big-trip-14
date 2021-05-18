@@ -6,10 +6,11 @@ import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+//import StatisticsView from '../view/statistics.js';
 
 export default class TripEvents {
-  constructor(pointsModel, filterModel) {
-    this._tripEventsContainer = document.querySelector('.trip-events');
+  constructor(tripEventsContainer, pointsModel, filterModel) {
+    this._tripEventsContainer = tripEventsContainer;
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
 
@@ -19,6 +20,7 @@ export default class TripEvents {
     this._sortComponent = null;
     this._eventListComponent = new EventsListView();
     this._noEventComponent = new NoEventView();
+    //this._statisticsComponent = new StatisticsView()
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -26,16 +28,35 @@ export default class TripEvents {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
     this._newEventPresenter = new NewEventPresenter(this._eventListComponent, this._handleViewAction);
   }
 
   init() {
     render(this._tripEventsContainer, this._eventListComponent, RenderPosition.BEFOREEND);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
+    //this._renderStatistics();
     this._renderTripEvents();
   }
+
+  destroy() {
+    this._clearTripEvents();
+    remove(this._eventListComponent);
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  // _renderStatistics() {
+  //   render(this._tripEventsContainer, this._statisticsComponent, RenderPosition.AFTERBEGIN);
+  //   this._statisticsComponent.hide();
+  // }
+
+  // switchToStatisticsScreen() {
+  //   this._statisticsComponent.show();
+  // }
 
   createEvent() {
     this._currentSortType = SortType.DAY;

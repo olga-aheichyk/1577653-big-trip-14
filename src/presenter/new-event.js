@@ -3,7 +3,7 @@ import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
-export default class NewPoint {
+export default class NewEvent {
   constructor(eventListComponent, changeData) {
     this._eventListComponent = eventListComponent;
     this._changeData = changeData;
@@ -34,6 +34,7 @@ export default class NewPoint {
       return;
     }
 
+    document.querySelector('.trip-main__event-add-btn').disabled = false;
     remove(this._eventEditComponent);
     this._eventEditComponent = null;
 
