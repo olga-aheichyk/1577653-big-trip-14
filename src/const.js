@@ -1,3 +1,6 @@
+const AUTHORIZATION = 'Basic 1577653oaheichyk';
+const END_POINT = 'https://14.ecmascript.pages.academy/big-trip/';
+
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 const OFFERS = {
@@ -38,18 +41,48 @@ const OFFERS = {
   },
 };
 
-const OFFERS_OF_TYPE = {
-  taxi: [OFFERS.business, OFFERS.radio],
-  bus: [OFFERS.radio, OFFERS.seats, OFFERS.train],
-  train: [OFFERS.seats, OFFERS.meal, OFFERS.comfort],
-  ship: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  transport: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort, OFFERS.train],
-  drive: [OFFERS.comfort],
-  flight: [OFFERS.seats, OFFERS.lugagge, OFFERS.comfort],
-  'check-in': [],
-  sightseeing: [OFFERS.train, OFFERS.seats],
-  restaurant: [OFFERS.radio],
-};
+const OFFERS_OF_TYPE = [
+  {
+    type: TYPES[0].toLowerCase(),
+    offers: [OFFERS.radio, OFFERS.business],
+  },
+  {
+    type: TYPES[1].toLowerCase(),
+    offers: [OFFERS.comfort, OFFERS.business, OFFERS.seats],
+  },
+  {
+    type: TYPES[2].toLowerCase(),
+    offers: [OFFERS.meal, OFFERS.business, OFFERS.seats],
+  },
+  {
+    type: TYPES[3].toLowerCase(),
+    offers: [OFFERS.comfort, OFFERS.train, OFFERS.lugagge],
+  },
+  {
+    type: TYPES[4].toLowerCase(),
+    offers: [],
+  },
+  {
+    type: TYPES[5].toLowerCase(),
+    offers: [OFFERS.radio, OFFERS.business],
+  },
+  {
+    type: TYPES[6].toLowerCase(),
+    offers: [OFFERS.comfort, OFFERS.business, OFFERS.seats],
+  },
+  {
+    type: TYPES[7].toLowerCase(),
+    offers: [OFFERS.meal, OFFERS.radio, OFFERS.seats],
+  },
+  {
+    type: TYPES[8].toLowerCase(),
+    offers: [OFFERS.comfort, OFFERS.train, OFFERS.lugagge],
+  },
+  {
+    type: TYPES[9].toLowerCase(),
+    offers: [],
+  },
+];
 
 const SortType = {
   DAY: 'day',
@@ -67,6 +100,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const FilterType = {
@@ -83,6 +117,8 @@ const NavigationItem = {
 const HIDE_CLASS = 'visually-hidden';
 
 export {
+  AUTHORIZATION,
+  END_POINT,
   TYPES,
   OFFERS,
   OFFERS_OF_TYPE,
