@@ -6,6 +6,7 @@ import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+import LoadingView from '../view/loading.js';
 //import StatisticsView from '../view/statistics.js';
 
 export default class TripEvents {
@@ -20,6 +21,8 @@ export default class TripEvents {
     this._sortComponent = null;
     this._eventListComponent = new EventsListView();
     this._noEventComponent = new NoEventView();
+    this._loadingComponent = new LoadingView();
+    this._isLoading = true;
     //this._statisticsComponent = new StatisticsView()
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -80,6 +83,10 @@ export default class TripEvents {
     return filteredPoints;
   }
 
+  _renderLoading() {
+    render(this._tripEventsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -111,6 +118,11 @@ export default class TripEvents {
   }
 
   _renderTripEvents() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (!this._getPoints().length) {
       this._renderNoEvent();
       return;
@@ -131,6 +143,7 @@ export default class TripEvents {
     this._clearListOfEvents();
     remove(this._sortComponent);
     remove(this._noEventComponent);
+    remove(this._loadingComponent);
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -161,6 +174,11 @@ export default class TripEvents {
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
         this._clearTripEvents();
+        this._renderTripEvents();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderTripEvents();
         break;
     }

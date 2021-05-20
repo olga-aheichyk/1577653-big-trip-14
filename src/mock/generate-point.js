@@ -56,6 +56,7 @@ const generateCityInfo = (city) => {
 };
 
 export const cityInfoArray = CITYES.map((city) => generateCityInfo(city));
+//console.log(cityInfoArray);
 
 const generatePoint = () => {
   const dayGap = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
@@ -66,7 +67,7 @@ const generatePoint = () => {
 
   return {
     type,
-    offers: makeRandomArray(OFFERS_OF_TYPE[type]),
+    offers: makeRandomArray(OFFERS_OF_TYPE[OFFERS_OF_TYPE.findIndex((item) => item.type === type.toLowerCase())].offers),
     info: getRandomElementFromArray(cityInfoArray),
     id: nanoid(5),
     isFavorite: Boolean(getRandomInteger(0, 1)),
