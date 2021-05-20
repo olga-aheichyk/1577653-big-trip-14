@@ -1,45 +1,8 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
-// const OFFERS = [
-//   {
-//     name: 'Add luggage',
-//     price: 30,
-//     shortName: 'lugagge',
-//   },
-//   {
-//     name: 'Switch to comfort class',
-//     price: 100,
-//     shortName: 'comfort',
-//   },
-//   {
-//     name: 'Add meal',
-//     price: 15,
-//     shortName: 'meal',
-//   },
-//   {
-//     name: 'Choose seats',
-//     price: 5,
-//     shortName: 'seats',
-//   },
-//   {
-//     name: 'Travel by train',
-//     price: 40,
-//     shortName: 'train',
-//   },
-//   {
-//     name: 'Upgrade to a business class',
-//     price: 120,
-//     shortName: 'business',
-//   },
-//   {
-//     name: 'Choose the radio station',
-//     price: 60,
-//     shortName: 'radio',
-//   },
-// ];
 
 const OFFERS = {
   lugagge: {
-    title: 'Add luggage', // name
+    title: 'Add luggage',
     price: 30,
     name: 'lugagge',
   },
@@ -94,10 +57,39 @@ const SortType = {
   PRICE: 'price',
 };
 
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
+
+const NavigationItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
+const HIDE_CLASS = 'visually-hidden';
 
 export {
   TYPES,
   OFFERS,
   OFFERS_OF_TYPE,
-  SortType
+  SortType,
+  UserAction,
+  UpdateType,
+  FilterType,
+  NavigationItem,
+  HIDE_CLASS
 };

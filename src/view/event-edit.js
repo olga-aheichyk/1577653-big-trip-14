@@ -1,7 +1,12 @@
 import dayjs from 'dayjs';
+//import he from 'he';
 import { TYPES, OFFERS_OF_TYPE } from '../const.js';
 import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
+
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
   dateFrom: dayjs(),
@@ -11,10 +16,7 @@ const BLANK_EVENT = {
   info: {
     name: '',
     description: '',
-    pictures: {
-      src: '',
-      description: '',
-    },
+    pictures: [],
   },
   offers: [],
 };
@@ -158,6 +160,17 @@ const createEventEditTemplate = (state) => {
     return '';
   };
 
+  const createEventDetailsTemplate = () => {
+    if (hasOffers || hasDescription || hasImages) {
+      return `
+        <section class="event__details">
+          ${createOffersCheckboxTemplate(type, id)}
+          ${createDestinationTemplate()}
+        </section>`;
+    }
+    return '';
+  };
+
   return `
   <li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -237,10 +250,7 @@ const createEventEditTemplate = (state) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
-      <section class="event__details">
-        ${createOffersCheckboxTemplate(type, id)}
-        ${createDestinationTemplate()}
-      </section>
+      ${createEventDetailsTemplate()}
     </form>
   </li>
   `;
@@ -251,18 +261,87 @@ export default class EventEdit extends SmartClassView {
     super();
     // this._point = point;
     this._state = EventEdit.parsePointToState(point);
+    this._datepickerFrom = null;
+    this._datepickerTo = null;
 
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleFormDeleteClick = this._handleFormDeleteClick.bind(this);
 
     this._handleTypeChange = this._handleTypeChange.bind(this);
     this._handleDestinationChange = this._handleDestinationChange.bind(this);
+    this._handleDateFromChange = this._handleDateFromChange.bind(this);
+    this._handleDateToChange = this._handleDateToChange.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
   }
 
   getTemplate() {
     return createEventEditTemplate(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerFrom) {
+      this._datepickerFrom.destroy();
+      this._datepickerFrom = null;
+    }
+
+    if (this._datepickerTo) {
+      this._datepickerTo.destroy();
+      this._datepickerTo = null;
+    }
+  }
+
+  reset(point) {
+    this.updateData(
+      EventEdit.parsePointToState(point),
+    );
+  }
+
+  _setDatepickerFrom() {
+    if (this._datepickerFrom) {
+      this._datepickerFrom.destroy();
+      this._datepickerFrom = null;
+    }
+
+    if (this._state.dateFrom) {
+      this._datepickerFrom = flatpickr(
+        this.getElement().querySelectorAll('.event__input--time')[0],
+        {
+          dateFormat: 'd/m/Y H:i',
+          // minDate: 'today',
+          enableTime: true,
+          allowInput: true,
+          defaultDate: this._state.dateFrom,
+          onClose: this._handleDateFromChange,
+        },
+      );
+    }
+  }
+
+  _setDatepickerTo() {
+    if (this._datepickerTo) {
+      this._datepickerTo.destroy();
+      this._datepickerTo = null;
+    }
+
+    if (this._state.dateTo) {
+      this._datepickerTo = flatpickr(
+        this.getElement().querySelectorAll('.event__input--time')[1],
+        {
+          dateFormat: 'd/m/Y H:i',
+          minDate: this._state.dateFrom,
+          enableTime: true,
+          allowInput: true,
+          defaultDate: this._state.dateTo,
+          onClose: this._handleDateToChange,
+        },
+      );
+    }
   }
 
   _handleEditArrowClick() {
@@ -285,6 +364,7 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleTypeChange(evt) {
+    evt.preventDefault();
     this.updateData({
       type: evt.target.value,
       hasOffers: OFFERS_OF_TYPE[evt.target.value].length !== 0,
@@ -292,15 +372,39 @@ export default class EventEdit extends SmartClassView {
   }
 
   _handleDestinationChange(evt) {
+    evt.preventDefault();
+    const cityIndex = cityInfoArray.findIndex((item) => item.name === evt.target.value);
     this.updateData({
       info: {
         name: evt.target.value,
-        description: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description,
-        pictures: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures,
+        description: cityInfoArray[cityIndex].description,
+        pictures: cityInfoArray[cityIndex].pictures,
       },
-      hasDescription: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].description.length !== 0,
-      hasImages: cityInfoArray[cityInfoArray.findIndex((item) => item.name === evt.target.value)].pictures.length !== 0,
+      hasDescription: cityInfoArray[cityIndex].description.length !== 0,
+      hasImages: cityInfoArray[cityIndex].pictures.length !== 0,
     });
+  }
+
+  _handleDateFromChange([userDate]) {
+    this.updateData({
+      dateFrom: userDate,
+    });
+  }
+
+  _handleDateToChange([userDate]) {
+    this.updateData({
+      dateTo: userDate,
+    });
+  }
+
+  _handleFormDeleteClick(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
+  }
+
+  setFormDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
   }
 
   _setInnerHandlers() {
@@ -315,7 +419,10 @@ export default class EventEdit extends SmartClassView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
     this.setFormSubmitHandler(this._callback.submitClick);
+    this.setFormDeleteClickHandler(this._callback.deleteClick);
     this.setEditArrowClickHandler(this._callback.editArrowClick);
   }
 

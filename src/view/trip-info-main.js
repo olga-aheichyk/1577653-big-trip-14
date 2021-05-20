@@ -9,7 +9,7 @@ const TITLE_CITIES_COUNT = 3;
 const createTripInfoMainTemplate = (points) => {
   if (points) {
     const tripCitiesArray = points
-      .sort((a, b) => sortByDateAscending(a, b))
+      .sort(sortByDateAscending)
       .map((point) => {
         return point.info.name;
       });
