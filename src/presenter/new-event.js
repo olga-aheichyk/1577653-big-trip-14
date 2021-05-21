@@ -1,12 +1,25 @@
 import EventEditView from '../view/event-edit.js';
-import {nanoid} from 'nanoid';
+import dayjs from 'dayjs';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
+const BLANK_EVENT = {
+  dateFrom: dayjs(),
+  dateTo: dayjs(dayjs()).add(1, 'day'),
+  basePrice: 0,
+  type: 'sightseeing',
+  info: null,
+  isFavorite: false,
+  offers: [],
+};
+
+
 export default class NewEvent {
-  constructor(eventListComponent, changeData) {
+  constructor(eventListComponent, changeData, destinationsModel, offersModel) {
     this._eventListComponent = eventListComponent;
     this._changeData = changeData;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
 
     this._eventEditComponent = null;
 
@@ -20,7 +33,7 @@ export default class NewEvent {
       return;
     }
 
-    this._eventEditComponent = new EventEditView();
+    this._eventEditComponent = new EventEditView(BLANK_EVENT, this._destinationsModel.getDestinations(), this._offersModel.getOffers());
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setFormDeleteClickHandler(this._handleFormDeleteClick);
 
@@ -41,15 +54,32 @@ export default class NewEvent {
     document.removeEventListener('keydown', this._handleEscKeyDown);
   }
 
+  setSaving() {
+    this._eventEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._eventEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(point) {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      Object.assign({id: nanoid(5)}, point),
+      point,
     );
-    this.destroy();
+    //this.destroy();
   }
 
   _handleFormDeleteClick() {

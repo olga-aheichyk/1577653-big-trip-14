@@ -61,8 +61,8 @@ export default class Points extends Observer {
       point,
       {
         basePrice: point.base_price,
-        dateFrom: point.date_from !== null ? new Date(point.date_from) : point.date_from, // На клиенте дата хранится как экземпляр Date
-        dateTo: point.date_to !== null ? new Date(point.date_to) : point.date_to,
+        dateFrom: new Date(point.date_from), // На клиенте дата хранится как экземпляр Date
+        dateTo: new Date(point.date_to),
         // ???
         info: point.destination,
         isFavorite: point.is_favorite,
@@ -83,8 +83,8 @@ export default class Points extends Observer {
       {},
       point,
       {
-        'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null, // На сервере дата хранится в ISO формате
-        'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
+        'date_from': point.dateFrom.toISOString(),
+        'date_to': point.dateTo.toISOString(),
         'base_price': point.basePrice,
         'is_favorite': point.isFavorite,
         'destination': point.info,
