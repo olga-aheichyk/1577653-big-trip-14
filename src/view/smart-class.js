@@ -3,7 +3,7 @@ import AbstractClass from './abstract-class.js';
 export default class SmartClass extends AbstractClass {
   constructor() {
     super();
-
+    // поменять на data
     this._point = {};
   }
 

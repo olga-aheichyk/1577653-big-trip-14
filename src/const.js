@@ -1,5 +1,5 @@
 const AUTHORIZATION = 'Basic 1577653oaheichyk';
-const END_POINT = 'https://14.ecmascript.pages.academy/big-trip/';
+const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 

@@ -42,43 +42,20 @@ const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 const filterModel = new FilterModel();
 
-api.getPoints()
-  .then((points) => {
+api.getData()
+  .then(([points, destinations, offers]) => {
+    destinationsModel.setDestinations(destinations);
+    offersModel.setOffers(offers);
     pointsModel.setPoints(UpdateType.INIT, points);
-
+  })
+  .then(() => {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
 
     navigationComponent.setNavigationClickHandler(handleNavigationClick);
     render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
   })
-  .catch(() => {
-    // ???
-    pointsModel.setPoints(UpdateType.INIT, []);
-  });
-
-
-// Нужно заменить const cityInfoArray в generate-points.js ???
-api.getDestinations()
-  .then((destinations) => {
-    destinationsModel.setDestinations(destinations);
-  })
-  .catch(() => {
-    // ???
-    destinationsModel.setDestinations([]);
-  });
-
-
-// Нужно заменить const OFFERS_OF_TYPE в const.js ???
-api.getOffers()
-  .then((offers) => {
-    offersModel.setOffers(offers);
-  })
-  .catch(() => {
-    // ???
-    offersModel.setOffers([]);
-  });
-
-const tripMainPresenter = new TripMainPresenter(pointsModel);
+  .then(() => {
+    const tripMainPresenter = new TripMainPresenter(pointsModel);
 tripMainPresenter.init();
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -86,7 +63,7 @@ const filterPresenter = new FilterPresenter(filtersContainer, filterModel, point
 filterPresenter.init();
 
 const tripEventsContainer = document.querySelector('.trip-events');
-const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel);
+const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
 tripEventsPresenter.init();
 
 const statisticsComponent = new StatisticsView();
@@ -98,3 +75,63 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
   document.querySelector('.trip-main__event-add-btn').disabled = true;
   tripEventsPresenter.createEvent();
 });
+  })
+
+// api.getPoints()
+//   .then((points) => {
+//     pointsModel.setPoints(UpdateType.INIT, points);
+
+//     document.querySelector('.trip-main__event-add-btn').disabled = false;
+
+//     navigationComponent.setNavigationClickHandler(handleNavigationClick);
+//     render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
+//   })
+//   .catch(() => {
+//     // ???
+//     pointsModel.setPoints(UpdateType.INIT, []);
+//   });
+
+
+// // Нужно заменить const cityInfoArray в generate-points.js ???
+// api.getDestinations()
+//   .then((destinations) => {
+//     destinationsModel.setDestinations(destinations);
+//   })
+//   //.then(destinationsModel.getDestinations())
+//   .catch(() => {
+//     // ???
+//     destinationsModel.setDestinations([]);
+//   });
+
+
+// // Нужно заменить const OFFERS_OF_TYPE в const.js ???
+// api.getOffers()
+//   .then((offers) => {
+//     offersModel.setOffers(offers);
+//   })
+//   //.then(offersModel.getOffers())
+//   .catch(() => {
+//     // ???
+//     offersModel.setOffers([]);
+//   });
+
+// const tripMainPresenter = new TripMainPresenter(pointsModel);
+// tripMainPresenter.init();
+
+// const filtersContainer = document.querySelector('.trip-controls__filters');
+// const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
+// filterPresenter.init();
+
+// const tripEventsContainer = document.querySelector('.trip-events');
+// const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
+// tripEventsPresenter.init();
+
+// const statisticsComponent = new StatisticsView();
+// render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
+// statisticsComponent.hide();
+
+// document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+//   evt.preventDefault();
+//   document.querySelector('.trip-main__event-add-btn').disabled = true;
+//   tripEventsPresenter.createEvent();
+// });

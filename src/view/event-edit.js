@@ -1,28 +1,14 @@
 import dayjs from 'dayjs';
 //import he from 'he';
-import { TYPES, OFFERS_OF_TYPE } from '../const.js';
-import { cityInfoArray } from '../mock/generate-point.js';
+import { TYPES } from '../const.js';
+//import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
 
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-
-const BLANK_EVENT = {
-  dateFrom: dayjs(),
-  dateTo: dayjs(dayjs()).add(1, 'day'),
-  basePrice: 0,
-  type: 'flight',
-  info: {
-    name: '',
-    description: '',
-    pictures: [],
-  },
-  offers: [],
-};
-
-const createEventEditTemplate = (state) => {
+const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
   const {
     dateFrom,
     dateTo,
@@ -32,8 +18,12 @@ const createEventEditTemplate = (state) => {
     offers,
     id,
     hasOffers,
+    hasInfo,
     hasDescription,
     hasImages,
+    isDisabled = false,
+    isSaving = false,
+    isDeleting = false,
   } = state;
 
   const createTypesCheckboxTemplate = (id) => {
@@ -58,9 +48,16 @@ const createEventEditTemplate = (state) => {
     return typesCheckboxTemplate;
   };
 
-  const createOffersCheckboxTemplate = (type, id) => {
-    const typeIndex = OFFERS_OF_TYPE.findIndex((item) => item.type === type.toLowerCase());
-    const offersCheckboxTemplate = OFFERS_OF_TYPE[typeIndex].offers.map((item) => {
+  const createOffersCheckboxTemplate = (type, offersOfType, id) => {
+    const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
+
+    // for (let offerIndex of offersOfType[typeIndex].offers) {
+    //   offerIndex++;
+    // }
+
+    const offersCheckboxTemplate = offersOfType[typeIndex].offers.map((item, offerIndex) => {
+      //const itemIndex = offersOfType[typeIndex].offers.findIndex((item) => item.type === type.toLowerCase());
+
       const isCheckedOffer = offers.map((offer) => offer.title).includes(item.title);
 
       if (isCheckedOffer) {
@@ -68,13 +65,13 @@ const createEventEditTemplate = (state) => {
         <div class="event__offer-selector">
           <input
             class="event__offer-checkbox  visually-hidden"
-            id="event-offer-${item.name}-${id}"
+            id="event-offer-${offerIndex++}"
             type="checkbox"
-            name="event-offer-${item.name}" checked
+            name="event-offer-${offerIndex++}" checked
           />
           <label
             class="event__offer-label"
-            for="event-offer-${item.name}-${id}">
+            for="event-offer-${offerIndex++}">
               <span class="event__offer-title">${item.title}</span>
                 &plus;&euro;&nbsp;
               <span class="event__offer-price">${item.price}</span>
@@ -87,13 +84,13 @@ const createEventEditTemplate = (state) => {
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${item.name}-${id}"
+          id="event-offer-${offerIndex++}"
           type="checkbox"
-          name="event-offer-${item.name}"
+          name="event-offer-${offerIndex++}"
           />
         <label
           class="event__offer-label"
-          for="event-offer-${item.name}-${id}">
+          for="event-offer-${offerIndex++}">
             <span class="event__offer-title">${item.title}</span>
               &plus;&euro;&nbsp;
             <span class="event__offer-price">${item.price}</span>
@@ -162,10 +159,10 @@ const createEventEditTemplate = (state) => {
   };
 
   const createEventDetailsTemplate = () => {
-    if (hasOffers || hasDescription || hasImages) {
+    if (hasOffers || hasInfo) {
       return `
         <section class="event__details">
-          ${createOffersCheckboxTemplate(type, id)}
+          ${createOffersCheckboxTemplate(type, offersOfType, id)}
           ${createDestinationTemplate()}
         </section>`;
     }
@@ -207,7 +204,7 @@ const createEventEditTemplate = (state) => {
             id="event-destination-${id}"
             type="text"
             name="event-destination"
-            value="${info.name}"
+            value="${hasInfo ? info.name : ''}"
             list="destination-list-${id}"
           />
           <datalist id="destination-list-${id}">
@@ -249,9 +246,9 @@ const createEventEditTemplate = (state) => {
           />
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+        <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -262,9 +259,12 @@ const createEventEditTemplate = (state) => {
 };
 
 export default class EventEdit extends SmartClassView {
-  constructor(point = BLANK_EVENT) {
+  constructor(point, destinations, offers) {
     super();
-    this._state = EventEdit.parsePointToState(point);
+
+    this._destinations = destinations;
+    this._offers = offers;
+    this._state = EventEdit.parsePointToState(point, this._offers);
     this._datepickerFrom = null;
     this._datepickerTo = null;
 
@@ -283,7 +283,7 @@ export default class EventEdit extends SmartClassView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate(this._state, this._destinations, this._offers);
   }
 
   removeElement() {
@@ -319,8 +319,8 @@ export default class EventEdit extends SmartClassView {
           dateFormat: 'd/m/Y H:i',
           // minDate: 'today',
           enableTime: true,
-          allowInput: true,
-          defaultDate: this._state.dateFrom,
+          //allowInput: true,
+          defaultDate: dayjs(this._state.dateFrom).format('DD/MM/YYYY HH:mm'),
           onClose: this._handleDateFromChange,
         },
       );
@@ -340,8 +340,8 @@ export default class EventEdit extends SmartClassView {
           dateFormat: 'd/m/Y H:i',
           minDate: this._state.dateFrom,
           enableTime: true,
-          allowInput: true,
-          defaultDate: this._state.dateTo,
+          //allowInput: true,
+          defaultDate: dayjs(this._state.dateTo).format('DD/MM/YYYY HH:mm'),
           onClose: this._handleDateToChange,
         },
       );
@@ -369,24 +369,28 @@ export default class EventEdit extends SmartClassView {
 
   _handleTypeChange(evt) {
     evt.preventDefault();
-    const typeIndex = OFFERS_OF_TYPE.findIndex((item) => item.type === evt.target.value);
+    const typeIndex = this._offers.findIndex((item) => item.type === evt.target.value);
     this.updateData({
       type: evt.target.value,
-      hasOffers: OFFERS_OF_TYPE[typeIndex].offers.length !== 0,
+      hasOffers: this._offers[typeIndex].offers.length !== 0,
     });
   }
 
   _handleDestinationChange(evt) {
     evt.preventDefault();
+    const cityInfoArray = this._destinations;
     const cityIndex = cityInfoArray.findIndex((item) => item.name === evt.target.value);
+    const newInfo = cityInfoArray[cityIndex];
     this.updateData({
-      info: {
-        name: evt.target.value,
-        description: cityInfoArray[cityIndex].description,
-        pictures: cityInfoArray[cityIndex].pictures,
-      },
-      hasDescription: cityInfoArray[cityIndex].description.length !== 0,
-      hasImages: cityInfoArray[cityIndex].pictures.length !== 0,
+      info: newInfo,
+      // info: {
+      //   name: evt.target.value,
+      //   description: cityInfoArray[cityIndex].description,
+      //   pictures: cityInfoArray[cityIndex].pictures,
+      // },
+      hasInfo: cityInfoArray[cityIndex] !== null,
+      hasDescription: newInfo !== null && newInfo.description.length > 0,
+      hasImages: newInfo !== null && newInfo.pictures.length !== 0,
     });
   }
 
@@ -431,15 +435,21 @@ export default class EventEdit extends SmartClassView {
     this.setEditArrowClickHandler(this._callback.editArrowClick);
   }
 
-  static parsePointToState(point) {
-    const typeIndex = OFFERS_OF_TYPE.findIndex((item) => item.type === point.type.toLowerCase());
+  static parsePointToState(point, offersOfType) {
+    //const offersOfType = this._offers;
+    const typeIndex = offersOfType.findIndex((item) => item.type === point.type.toLowerCase());
+
     return Object.assign(
       {},
       point,
       {
-        hasOffers: OFFERS_OF_TYPE[typeIndex].offers.length !== 0,
-        hasDescription: point.info.description.length !== 0,
-        hasImages: point.info.pictures.length !==  0,
+        hasOffers: offersOfType[typeIndex].offers.length !== 0,
+        hasInfo: point.info !== null,
+        hasDescription: point.info !== null && point.info.description.length !== 0,
+        hasImages: point.info !== null && point.info.description.length !== 0,
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
       },
     );
   }
@@ -448,20 +458,29 @@ export default class EventEdit extends SmartClassView {
     state = Object.assign({}, state);
 
     if (!state.hasOffers) {
-      OFFERS_OF_TYPE[state.type] = [];
+      this._offers[state.type] = [];
     }
 
-    if (!state.hasDescription) {
-      state.info.description = '';
+    if (!state.hasInfo) {
+      state.info = null;
+    } else {
+      if (!state.hasDescription) {
+        state.info.description = '';
+      }
+
+      if (!state.hasImages) {
+        state.info.pictures = [];
+      }
     }
 
-    if (!state.hasImages) {
-      state.info.pictures = '';
-    }
 
     delete state.hasOffers;
+    delete state.hasInfo;
     delete state.hasDescription;
     delete state.hasImages;
+    delete state.isDisabled;
+    delete state.isSaving;
+    delete state.isDeleting;
 
     return state;
   }

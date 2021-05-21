@@ -2,7 +2,7 @@ import SortView from '../view/sort.js';
 import EventsListView from '../view/events-list.js';
 import NoEventView from '../view/no-event.js';
 import NewEventPresenter from '../presenter/new-event.js';
-import PointPresenter from './point.js';
+import PointPresenter, {State as PointPresenterViewState} from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
@@ -10,10 +10,13 @@ import LoadingView from '../view/loading.js';
 //import StatisticsView from '../view/statistics.js';
 
 export default class TripEvents {
-  constructor(tripEventsContainer, pointsModel, filterModel) {
+  constructor(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api) {
     this._tripEventsContainer = tripEventsContainer;
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
+    this._api = api;
 
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
@@ -22,7 +25,7 @@ export default class TripEvents {
     this._eventListComponent = new EventsListView();
     this._noEventComponent = new NoEventView();
     this._loadingComponent = new LoadingView();
-    this._isLoading = true;
+    this._isLoading = false;
     //this._statisticsComponent = new StatisticsView()
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -31,7 +34,7 @@ export default class TripEvents {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._newEventPresenter = new NewEventPresenter(this._eventListComponent, this._handleViewAction);
+    this._newEventPresenter = new NewEventPresenter(this._eventListComponent, this._handleViewAction, this._destinationsModel, this._offersModel);
   }
 
   init() {
@@ -99,7 +102,7 @@ export default class TripEvents {
   }
 
   _renderEvent(point) {
-    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange, this._destinationsModel, this._offersModel);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
@@ -149,13 +152,37 @@ export default class TripEvents {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        //this._pointsModel.updatePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        //this._pointsModel.addPoint(updateType, update);
+        this._newEventPresenter.setSaving();
+        this._api.addPoint(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._newEventPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        //this._pointsModel.deletePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deletePoint(update)
+          .then(() => {
+            this._pointsModel.deletePoint(updateType, update);
+          })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }

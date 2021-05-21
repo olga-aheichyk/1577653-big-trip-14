@@ -51,7 +51,7 @@ const generateCityInfo = (city) => {
     name: city,
     description: makeRandomArray(DESCRIPTIONS).slice(0, (getRandomInteger(0, 5))).join(' '),
     //description: makeRandomArray(DESCRIPTIONS).slice(0, 0).join(''),
-    pictures: new Array(getRandomInteger(0, 5)).fill(null).map(generatePhoto),
+    pictures: new Array(getRandomInteger(0, 1)).fill(null).map(generatePhoto),
   };
 };
 
