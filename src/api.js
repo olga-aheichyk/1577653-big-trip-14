@@ -1,5 +1,4 @@
 import PointsModel from './model/points.js';
-import OffersModel from './model/offers.js';
 
 const Method = {
   GET: 'GET',
@@ -39,8 +38,8 @@ export default class Api {
     return Promise.all([
       this.getPoints(),
       this.getDestinations(),
-      this.getOffers()
-    ])
+      this.getOffers(),
+    ]);
   }
 
   updatePoint(point) {

@@ -48,18 +48,10 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     return typesCheckboxTemplate;
   };
 
-  const createOffersCheckboxTemplate = (type, offersOfType, id) => {
+  const createOffersCheckboxTemplate = (type, offersOfType) => {
     const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
-
-    // for (let offerIndex of offersOfType[typeIndex].offers) {
-    //   offerIndex++;
-    // }
-
     const offersCheckboxTemplate = offersOfType[typeIndex].offers.map((item, offerIndex) => {
-      //const itemIndex = offersOfType[typeIndex].offers.findIndex((item) => item.type === type.toLowerCase());
-
       const isCheckedOffer = offers.map((offer) => offer.title).includes(item.title);
-
       if (isCheckedOffer) {
         return `
         <div class="event__offer-selector">

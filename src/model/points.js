@@ -83,9 +83,7 @@ export default class Points extends Observer {
       {},
       point,
       {
-        //'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
         'date_from': point.dateFrom.toISOString(),// На сервере дата хранится в ISO формате
-        //'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
         'date_to': point.dateTo.toISOString(),
         'base_price': point.basePrice,
         'is_favorite': point.isFavorite,
@@ -99,7 +97,7 @@ export default class Points extends Observer {
     delete adaptedPoint.info;
     delete adaptedPoint.isFavorite;
 
-    console.log(adaptedPoint);
+    //console.log(adaptedPoint);
     return adaptedPoint;
   }
 }

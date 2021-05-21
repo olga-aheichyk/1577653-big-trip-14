@@ -19,23 +19,6 @@ import { render, RenderPosition } from './utils/render.js';
 const api = new Api(END_POINT, AUTHORIZATION);
 document.querySelector('.trip-main__event-add-btn').disabled = true;
 
-const navigationContainer = document.querySelector('.trip-controls__navigation');
-const navigationComponent = new NavigationView();
-
-const handleNavigationClick = (navigationItem) => {
-  switch(navigationItem) {
-    case NavigationItem.TABLE:
-      statisticsComponent.hide();
-      tripEventsPresenter.destroy();
-      tripEventsPresenter.init();
-      break;
-
-    case NavigationItem.STATS:
-      tripEventsPresenter.destroy();
-      statisticsComponent.show();
-      break;
-  }
-};
 
 const pointsModel = new PointsModel();
 const destinationsModel = new DestinationsModel();
@@ -53,29 +36,47 @@ api.getData()
 
     navigationComponent.setNavigationClickHandler(handleNavigationClick);
     render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
-  })
-  .then(() => {
+
+    const navigationContainer = document.querySelector('.trip-controls__navigation');
+    const navigationComponent = new NavigationView();
+
+    const handleNavigationClick = (navigationItem) => {
+      switch(navigationItem) {
+        case NavigationItem.TABLE:
+          statisticsComponent.hide();
+          tripEventsPresenter.destroy();
+          tripEventsPresenter.init();
+          break;
+
+        case NavigationItem.STATS:
+          tripEventsPresenter.destroy();
+          statisticsComponent.show();
+          break;
+      }
+    };
+
     const tripMainPresenter = new TripMainPresenter(pointsModel);
-tripMainPresenter.init();
+    tripMainPresenter.init();
 
-const filtersContainer = document.querySelector('.trip-controls__filters');
-const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
-filterPresenter.init();
+    const filtersContainer = document.querySelector('.trip-controls__filters');
+    const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
+    filterPresenter.init();
 
-const tripEventsContainer = document.querySelector('.trip-events');
-const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
-tripEventsPresenter.init();
+    const tripEventsContainer = document.querySelector('.trip-events');
+    const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
+    tripEventsPresenter.init();
 
-const statisticsComponent = new StatisticsView();
-render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
-statisticsComponent.hide();
+    const statisticsComponent = new StatisticsView();
+    render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
+    statisticsComponent.hide();
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-  evt.preventDefault();
-  document.querySelector('.trip-main__event-add-btn').disabled = true;
-  tripEventsPresenter.createEvent();
-});
-  })
+    document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      document.querySelector('.trip-main__event-add-btn').disabled = true;
+      tripEventsPresenter.createEvent();
+    });
+  });
+
 
 // api.getPoints()
 //   .then((points) => {
@@ -134,4 +135,4 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
 //   evt.preventDefault();
 //   document.querySelector('.trip-main__event-add-btn').disabled = true;
 //   tripEventsPresenter.createEvent();
-// });
+// })
