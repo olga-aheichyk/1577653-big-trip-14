@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 //import he from 'he';
-import { TYPES } from '../const.js';
+//import { TYPES } from '../const.js';
 //import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
 
@@ -26,20 +26,22 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     isDeleting = false,
   } = state;
 
-  const createTypesCheckboxTemplate = (id) => {
-    const typesCheckboxTemplate = TYPES.map((item) => {
+  const createTypesCheckboxTemplate = (offersOfType, id) => {
+    const types = offersOfType.slice().map((object) => object.type);
+
+    const typesCheckboxTemplate = types.map((type) => {
       return `
       <div class="event__type-item">
         <input
-          id="event-type-${item.toLowerCase()}-${id}"
+          id="event-type-${type.toLowerCase()}-${id}"
           class="event__type-input  visually-hidden"
           type="radio" name="event-type"
-          value="${item.toLowerCase()}"
+          value="${type.toLowerCase()}"
         />
         <label
-        class="event__type-label  event__type-label--${item.toLowerCase()}"
-        for="event-type-${item.toLowerCase()}-${id}">
-          ${item}
+        class="event__type-label  event__type-label--${type.toLowerCase()}"
+        for="event-type-${type.toLowerCase()}-${id}">
+          ${type}
         </label>
       </div>
       `;
@@ -50,8 +52,10 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
 
   const createOffersCheckboxTemplate = (type, offersOfType) => {
     const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
-    const offersCheckboxTemplate = offersOfType[typeIndex].offers.map((item, offerIndex) => {
-      const isCheckedOffer = offers.map((offer) => offer.title).includes(item.title);
+    const availableOffers = offersOfType[typeIndex].offers;
+    console.log(availableOffers);
+    const offersCheckboxTemplate = availableOffers.map((availableOffer, offerIndex) => {
+      const isCheckedOffer = offers.map((offer) => offer.title).includes(availableOffer.title);
       if (isCheckedOffer) {
         return `
         <div class="event__offer-selector">
@@ -64,9 +68,9 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
           <label
             class="event__offer-label"
             for="event-offer-${offerIndex++}">
-              <span class="event__offer-title">${item.title}</span>
+              <span class="event__offer-title">${availableOffer.title}</span>
                 &plus;&euro;&nbsp;
-              <span class="event__offer-price">${item.price}</span>
+              <span class="event__offer-price">${availableOffer.price}</span>
           </label>
         </div>
         `;
@@ -83,9 +87,9 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
         <label
           class="event__offer-label"
           for="event-offer-${offerIndex++}">
-            <span class="event__offer-title">${item.title}</span>
+            <span class="event__offer-title">${availableOffer.title}</span>
               &plus;&euro;&nbsp;
-            <span class="event__offer-price">${item.price}</span>
+            <span class="event__offer-price">${availableOffer.price}</span>
         </label>
       </div>
       `;
@@ -182,7 +186,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createTypesCheckboxTemplate(id)}
+              ${createTypesCheckboxTemplate(offersOfType, id)}
             </fieldset>
           </div>
         </div>
@@ -294,7 +298,7 @@ export default class EventEdit extends SmartClassView {
 
   reset(point) {
     this.updateData(
-      EventEdit.parsePointToState(point),
+      EventEdit.parsePointToState(point, this._offers),
     );
   }
 
@@ -351,7 +355,7 @@ export default class EventEdit extends SmartClassView {
 
   _handleFormSubmit(evt) {
     evt.preventDefault();
-    this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
+    this._callback.submitClick(EventEdit.parseStateToPoint(this._state, this._offers));
   }
 
   setFormSubmitHandler(callback) {
@@ -361,6 +365,7 @@ export default class EventEdit extends SmartClassView {
 
   _handleTypeChange(evt) {
     evt.preventDefault();
+    console.log(this._offers);
     const typeIndex = this._offers.findIndex((item) => item.type === evt.target.value);
     this.updateData({
       type: evt.target.value,
@@ -400,7 +405,7 @@ export default class EventEdit extends SmartClassView {
 
   _handleFormDeleteClick(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
+    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state, this._offers));
   }
 
   setFormDeleteClickHandler(callback) {
@@ -446,11 +451,11 @@ export default class EventEdit extends SmartClassView {
     );
   }
 
-  static parseStateToPoint(state) {
+  static parseStateToPoint(state, offersOfType) {
     state = Object.assign({}, state);
 
     if (!state.hasOffers) {
-      this._offers[state.type] = [];
+      offersOfType[state.type] = [];
     }
 
     if (!state.hasInfo) {
