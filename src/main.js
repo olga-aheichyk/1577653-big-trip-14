@@ -34,9 +34,6 @@ api.getData()
   .then(() => {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
 
-    navigationComponent.setNavigationClickHandler(handleNavigationClick);
-    render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
-
     const navigationContainer = document.querySelector('.trip-controls__navigation');
     const navigationComponent = new NavigationView();
 
@@ -54,6 +51,9 @@ api.getData()
           break;
       }
     };
+
+    navigationComponent.setNavigationClickHandler(handleNavigationClick);
+    render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
 
     const tripMainPresenter = new TripMainPresenter(pointsModel);
     tripMainPresenter.init();
