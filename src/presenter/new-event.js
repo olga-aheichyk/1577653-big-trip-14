@@ -1,6 +1,5 @@
 import EventEditView from '../view/event-edit.js';
 import dayjs from 'dayjs';
-//import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -10,11 +9,6 @@ const BLANK_EVENT = {
   basePrice: 0,
   type: 'sightseeing',
   info: null,
-  // {
-  //   name: '',
-  //   description: '',
-  //   pictures: [],
-  // },
   isFavorite: false,
   offers: [],
 };

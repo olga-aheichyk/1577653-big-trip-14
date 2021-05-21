@@ -59,7 +59,6 @@ export default class Point {
     }
 
     if (this._mode === Mode.EDITING) {
-      //replace(this._eventEditComponent, prevEventEditComponent);
       replace(this._eventItemComponent, prevEventEditComponent);
       this._mode = Mode.DEFAULT;
     }
@@ -158,7 +157,6 @@ export default class Point {
       UpdateType.MINOR,
       point,
     );
-    //this._closeEventEdit();
   }
 
   _handleFormDeleteClick(point) {

@@ -1,7 +1,5 @@
 import dayjs from 'dayjs';
 //import he from 'he';
-//import { TYPES } from '../const.js';
-//import { cityInfoArray } from '../mock/generate-point.js';
 import SmartClassView from './smart-class.js';
 
 import flatpickr from 'flatpickr';
@@ -53,7 +51,6 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
   const createOffersCheckboxTemplate = (type, offersOfType) => {
     const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
     const availableOffers = offersOfType[typeIndex].offers;
-    console.log(availableOffers);
     const offersCheckboxTemplate = availableOffers.map((availableOffer, offerIndex) => {
       const isCheckedOffer = offers.map((offer) => offer.title).includes(availableOffer.title);
       if (isCheckedOffer) {
@@ -365,7 +362,6 @@ export default class EventEdit extends SmartClassView {
 
   _handleTypeChange(evt) {
     evt.preventDefault();
-    console.log(this._offers);
     const typeIndex = this._offers.findIndex((item) => item.type === evt.target.value);
     this.updateData({
       type: evt.target.value,

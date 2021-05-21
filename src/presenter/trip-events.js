@@ -26,7 +26,6 @@ export default class TripEvents {
     this._noEventComponent = new NoEventView();
     this._loadingComponent = new LoadingView();
     this._isLoading = false;
-    //this._statisticsComponent = new StatisticsView()
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -43,7 +42,6 @@ export default class TripEvents {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
-    //this._renderStatistics();
     this._renderTripEvents();
   }
 
@@ -54,15 +52,6 @@ export default class TripEvents {
     this._pointsModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
   }
-
-  // _renderStatistics() {
-  //   render(this._tripEventsContainer, this._statisticsComponent, RenderPosition.AFTERBEGIN);
-  //   this._statisticsComponent.hide();
-  // }
-
-  // switchToStatisticsScreen() {
-  //   this._statisticsComponent.show();
-  // }
 
   createEvent() {
     this._currentSortType = SortType.DAY;
@@ -152,7 +141,6 @@ export default class TripEvents {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        //this._pointsModel.updatePoint(updateType, update);
         this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
         this._api.updatePoint(update)
           .then((response) => {
@@ -163,7 +151,6 @@ export default class TripEvents {
           });
         break;
       case UserAction.ADD_POINT:
-        //this._pointsModel.addPoint(updateType, update);
         this._newEventPresenter.setSaving();
         this._api.addPoint(update)
           .then((response) => {
@@ -174,7 +161,6 @@ export default class TripEvents {
           });
         break;
       case UserAction.DELETE_POINT:
-        //this._pointsModel.deletePoint(updateType, update);
         this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
         this._api.deletePoint(update)
           .then(() => {
@@ -190,16 +176,13 @@ export default class TripEvents {
   _handleModelEvent(updateType, point) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this._pointPresenter[point.id].init(point);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
         this._clearListOfEvents();
         this._renderListOfEvents();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this._clearTripEvents();
         this._renderTripEvents();
         break;
