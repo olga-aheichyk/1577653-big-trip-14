@@ -53,33 +53,15 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     const availableOffers = offersOfType[typeIndex].offers;
     const offersCheckboxTemplate = availableOffers.map((availableOffer, offerIndex) => {
       const isCheckedOffer = offers.map((offer) => offer.title).includes(availableOffer.title);
-      if (isCheckedOffer) {
-        return `
-        <div class="event__offer-selector">
-          <input
-            class="event__offer-checkbox  visually-hidden"
-            id="event-offer-${offerIndex++}"
-            type="checkbox"
-            name="event-offer-${offerIndex++}" checked
-          />
-          <label
-            class="event__offer-label"
-            for="event-offer-${offerIndex++}">
-              <span class="event__offer-title">${availableOffer.title}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${availableOffer.price}</span>
-          </label>
-        </div>
-        `;
-      }
 
       return `
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${offerIndex++}"
+          id="event-offer-${offerIndex}"
           type="checkbox"
-          name="event-offer-${offerIndex++}"
+          name="event-offer-${offerIndex}"
+          ${isCheckedOffer ? 'checked' : ''}
           />
         <label
           class="event__offer-label"
@@ -155,7 +137,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     if (hasOffers || hasInfo) {
       return `
         <section class="event__details">
-          ${createOffersCheckboxTemplate(type, offersOfType, id)}
+          ${createOffersCheckboxTemplate(type, offersOfType)}
           ${createDestinationTemplate()}
         </section>`;
     }
@@ -269,6 +251,8 @@ export default class EventEdit extends SmartClassView {
     this._handleDestinationChange = this._handleDestinationChange.bind(this);
     this._handleDateFromChange = this._handleDateFromChange.bind(this);
     this._handleDateToChange = this._handleDateToChange.bind(this);
+    this._handlePriceChange = this._handlePriceChange.bind(this);
+    this._handleOffersChange = this._handleOffersChange.bind(this);
 
     this._setInnerHandlers();
     this._setDatepickerFrom();
@@ -352,7 +336,7 @@ export default class EventEdit extends SmartClassView {
 
   _handleFormSubmit(evt) {
     evt.preventDefault();
-    this._callback.submitClick(EventEdit.parseStateToPoint(this._state, this._offers));
+    this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
   }
 
   setFormSubmitHandler(callback) {
@@ -399,9 +383,39 @@ export default class EventEdit extends SmartClassView {
     });
   }
 
+  _handlePriceChange(evt) {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: Number(evt.target.value),
+    });
+  }
+
+  _handleOffersChange(evt) {
+    evt.preventDefault();
+    console.log(evt.target.tagName);
+
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    //const currentType = document.querySelector('.event__offer-checkbox').name.slice(12, -2);
+    //console.log(currentType);
+    const typeIndex = this._offers.findIndex((item) => item.type === this._state.type);
+    const availableOffers = this._offers[typeIndex].offers;
+    const checkedOffersIndexes = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'))
+      .slice().map((input) => input.name.slice(-1));
+
+    const checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
+
+    this.updateData({
+      offers: checkedOffers,
+    });
+
+  }
+
   _handleFormDeleteClick(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state, this._offers));
+    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
   }
 
   setFormDeleteClickHandler(callback) {
@@ -417,6 +431,14 @@ export default class EventEdit extends SmartClassView {
     this.getElement()
       .querySelector('.event__input--destination')
       .addEventListener('change', this._handleDestinationChange);
+
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('change', this._handlePriceChange);
+
+    this.getElement()
+      .querySelector('.event__offer-selector')
+      .addEventListener('change', this._handleOffersChange);
   }
 
   restoreHandlers() {
@@ -447,11 +469,11 @@ export default class EventEdit extends SmartClassView {
     );
   }
 
-  static parseStateToPoint(state, offersOfType) {
+  static parseStateToPoint(state) {
     state = Object.assign({}, state);
 
     if (!state.hasOffers) {
-      offersOfType[state.type] = [];
+      state.offers = [];
     }
 
     if (!state.hasInfo) {
