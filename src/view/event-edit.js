@@ -58,14 +58,14 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${offerIndex}"
+          id="event-offer-${type}-${offerIndex}"
           type="checkbox"
-          name="event-offer-${offerIndex}"
+          name="event-offer-${type}-${offerIndex}"
           ${isCheckedOffer ? 'checked' : ''}
           />
         <label
           class="event__offer-label"
-          for="event-offer-${offerIndex++}">
+          for="event-offer-${type}-${offerIndex++}">
             <span class="event__offer-title">${availableOffer.title}</span>
               &plus;&euro;&nbsp;
             <span class="event__offer-price">${availableOffer.price}</span>
@@ -360,11 +360,6 @@ export default class EventEdit extends SmartClassView {
     const newInfo = cityInfoArray[cityIndex];
     this.updateData({
       info: newInfo,
-      // info: {
-      //   name: evt.target.value,
-      //   description: cityInfoArray[cityIndex].description,
-      //   pictures: cityInfoArray[cityIndex].pictures,
-      // },
       hasInfo: cityInfoArray[cityIndex] !== null,
       hasDescription: newInfo !== null && newInfo.description.length > 0,
       hasImages: newInfo !== null && newInfo.pictures.length !== 0,
@@ -392,20 +387,23 @@ export default class EventEdit extends SmartClassView {
 
   _handleOffersChange(evt) {
     evt.preventDefault();
-    console.log(evt.target.tagName);
 
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
 
-    //const currentType = document.querySelector('.event__offer-checkbox').name.slice(12, -2);
-    //console.log(currentType);
     const typeIndex = this._offers.findIndex((item) => item.type === this._state.type);
     const availableOffers = this._offers[typeIndex].offers;
-    const checkedOffersIndexes = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'))
-      .slice().map((input) => input.name.slice(-1));
 
-    const checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
+    let checkedOffers = [];
+
+    if (availableOffers.length) {
+      const checkedOffersIndexes = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'))
+        .slice().map((input) => input.name.slice(-1));
+
+      checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
+    }
+
 
     this.updateData({
       offers: checkedOffers,
@@ -436,9 +434,11 @@ export default class EventEdit extends SmartClassView {
       .querySelector('.event__input--price')
       .addEventListener('change', this._handlePriceChange);
 
-    this.getElement()
-      .querySelector('.event__offer-selector')
-      .addEventListener('change', this._handleOffersChange);
+    if (this._state.hasOffers) {
+      this.getElement()
+        .querySelector('.event__section--offers')
+        .addEventListener('change', this._handleOffersChange);
+    }
   }
 
   restoreHandlers() {
@@ -451,7 +451,6 @@ export default class EventEdit extends SmartClassView {
   }
 
   static parsePointToState(point, offersOfType) {
-    //const offersOfType = this._offers;
     const typeIndex = offersOfType.findIndex((item) => item.type === point.type.toLowerCase());
 
     return Object.assign(

@@ -20,6 +20,7 @@ const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 const filterModel = new FilterModel();
 
+
 api.getData()
   .then(([points, destinations, offers]) => {
     destinationsModel.setDestinations(destinations);
