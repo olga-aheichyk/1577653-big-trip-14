@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-//import he from 'he';
+import he from 'he';
 import SmartClassView from './smart-class.js';
 
 import flatpickr from 'flatpickr';
@@ -179,7 +179,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
             id="event-destination-${id}"
             type="text"
             name="event-destination"
-            value="${hasInfo ? info.name : ''}"
+            value="${hasInfo ? he.encode(info.name) : ''}"
             list="destination-list-${id}"
           />
           <datalist id="destination-list-${id}">
@@ -215,9 +215,10 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
           <input
             class="event__input  event__input--price"
             id="event-price-${id}"
-            type="text"
+            type="number"
+            min="0"
             name="event-price"
-            value="${basePrice}"
+            value="${Number(basePrice)}"
           />
         </div>
 
@@ -297,7 +298,7 @@ export default class EventEdit extends SmartClassView {
           // minDate: 'today',
           enableTime: true,
           //allowInput: true,
-          defaultDate: dayjs(this._state.dateFrom).format('DD/MM/YYYY HH:mm'),
+          defaultDate: new Date(this._state.dateFrom),
           onClose: this._handleDateFromChange,
         },
       );
@@ -318,7 +319,7 @@ export default class EventEdit extends SmartClassView {
           minDate: this._state.dateFrom,
           enableTime: true,
           //allowInput: true,
-          defaultDate: dayjs(this._state.dateTo).format('DD/MM/YYYY HH:mm'),
+          defaultDate: new Date(this._state.dateTo),
           onClose: this._handleDateToChange,
         },
       );

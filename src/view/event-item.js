@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getDuration } from '../utils/data-processing.js';
+import { getDuration, formatDuration } from '../utils/data-processing.js';
 import AbstractClassView from './abstract-class.js';
 
 const createEventItemTemplate = (point) => {
@@ -56,7 +56,7 @@ const createEventItemTemplate = (point) => {
             ${dayjs(dateTo).format('HH:mm')}
           </time>
         </p>
-        <p class="event__duration">${getDuration(dateFrom, dateTo)}</p>
+        <p class="event__duration">${formatDuration(getDuration(dateFrom, dateTo))}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

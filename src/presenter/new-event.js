@@ -1,11 +1,11 @@
 import EventEditView from '../view/event-edit.js';
-import dayjs from 'dayjs';
+//import dayjs from 'dayjs';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
 const BLANK_EVENT = {
-  dateFrom: dayjs(),
-  dateTo: dayjs(dayjs()).add(1, 'day'),
+  dateFrom: new Date(),
+  dateTo: new Date(),
   basePrice: 0,
   type: 'sightseeing',
   info: null,
