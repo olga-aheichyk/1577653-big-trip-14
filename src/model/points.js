@@ -61,9 +61,8 @@ export default class Points extends Observer {
       point,
       {
         basePrice: point.base_price,
-        dateFrom: new Date(point.date_from), // На клиенте дата хранится как экземпляр Date
+        dateFrom: new Date(point.date_from),
         dateTo: new Date(point.date_to),
-        // ???
         info: point.destination,
         isFavorite: point.is_favorite,
       },

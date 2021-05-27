@@ -1,7 +1,7 @@
+import AbstractClassView from './abstract-class.js';
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 dayjs.extend(minMax);
-import AbstractClassView from './abstract-class.js';
 import { sortByDateAscending } from '../utils/data-processing.js';
 
 const TITLE_CITIES_COUNT = 3;
@@ -13,9 +13,6 @@ const createTripInfoMainTemplate = (points) => {
       .map((point) => {
         return point.info.name;
       });
-
-    // const tripCitiesSet = new Set(tripCitiesArray);
-    // const uniqueTripCities = Array.from(tripCitiesSet);
 
     const title =
     tripCitiesArray.length > TITLE_CITIES_COUNT

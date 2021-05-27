@@ -1,10 +1,9 @@
+import SmartClassView from './smart-class.js';
 import dayjs from 'dayjs';
 import he from 'he';
-import SmartClassView from './smart-class.js';
-
 import flatpickr from 'flatpickr';
-
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
 const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
   const {
@@ -31,15 +30,15 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
       return `
       <div class="event__type-item">
         <input
-          id="event-type-${type.toLowerCase()}-${id}"
+          id="event-type-${type}-${id}"
           class="event__type-input  visually-hidden"
           type="radio" name="event-type"
-          value="${type.toLowerCase()}"
+          value="${type}"
         />
         <label
-        class="event__type-label  event__type-label--${type.toLowerCase()}"
-        for="event-type-${type.toLowerCase()}-${id}">
-          ${type}
+        class="event__type-label  event__type-label--${type}"
+        for="event-type-${type}-${id}">
+          ${capitalizeFirstLetter(type)}
         </label>
       </div>
       `;
@@ -49,7 +48,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
   };
 
   const createOffersCheckboxTemplate = (type, offersOfType) => {
-    const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
+    const typeIndex = offersOfType.findIndex((item) => item.type === type);
     const availableOffers = offersOfType[typeIndex].offers;
     const offersCheckboxTemplate = availableOffers.map((availableOffer, offerIndex) => {
       const isCheckedOffer = offers.map((offer) => offer.title).includes(availableOffer.title);
@@ -172,7 +171,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${id}">
-            ${type}
+            ${capitalizeFirstLetter(type)}
           </label>
           <input
             class="event__input  event__input--destination"
@@ -217,6 +216,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
             id="event-price-${id}"
             type="number"
             min="0"
+            max="10000"
             name="event-price"
             value="${Number(basePrice)}"
           />
@@ -295,9 +295,7 @@ export default class EventEdit extends SmartClassView {
         this.getElement().querySelectorAll('.event__input--time')[0],
         {
           dateFormat: 'd/m/Y H:i',
-          // minDate: 'today',
           enableTime: true,
-          //allowInput: true,
           defaultDate: new Date(this._state.dateFrom),
           onClose: this._handleDateFromChange,
         },
@@ -318,7 +316,6 @@ export default class EventEdit extends SmartClassView {
           dateFormat: 'd/m/Y H:i',
           minDate: this._state.dateFrom,
           enableTime: true,
-          //allowInput: true,
           defaultDate: new Date(this._state.dateTo),
           onClose: this._handleDateToChange,
         },

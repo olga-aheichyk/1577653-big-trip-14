@@ -1,5 +1,5 @@
-import { NavigationItem } from '../const.js';
 import AbstractClassView from './abstract-class.js';
+import { NavigationItem } from '../const.js';
 
 const createNavigationTemplate = () => {
   return `

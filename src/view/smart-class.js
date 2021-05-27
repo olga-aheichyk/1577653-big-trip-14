@@ -3,8 +3,7 @@ import AbstractClass from './abstract-class.js';
 export default class SmartClass extends AbstractClass {
   constructor() {
     super();
-    // поменять на data
-    this._point = {};
+    this._data = {};
   }
 
   restoreHandlers() {
@@ -17,6 +16,10 @@ export default class SmartClass extends AbstractClass {
     this.removeElement();
 
     const newElement = this.getElement();
+
+    if (parent === null) {
+      return;
+    }
 
     parent.replaceChild(newElement, prevElement);
 

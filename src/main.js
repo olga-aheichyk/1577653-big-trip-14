@@ -40,14 +40,11 @@ api.getData()
     const tripMainPresenter = new TripMainPresenter(pointsModel);
     tripMainPresenter.init();
 
-
     const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
     filterPresenter.init();
 
-
     const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
     tripEventsPresenter.init();
-
 
     let statisticsComponent = null;
 
@@ -67,7 +64,6 @@ api.getData()
     };
 
     navigationComponent.setNavigationClickHandler(handleNavigationClick);
-
 
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
       evt.preventDefault();

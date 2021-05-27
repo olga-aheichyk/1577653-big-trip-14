@@ -1,5 +1,4 @@
 import EventEditView from '../view/event-edit.js';
-//import dayjs from 'dayjs';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -25,6 +24,7 @@ export default class NewEvent {
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFormDeleteClick = this._handleFormDeleteClick.bind(this);
+    this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
   }
 
@@ -36,6 +36,7 @@ export default class NewEvent {
     this._eventEditComponent = new EventEditView(BLANK_EVENT, this._destinationsModel.getDestinations(), this._offersModel.getOffers());
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setFormDeleteClickHandler(this._handleFormDeleteClick);
+    this._eventEditComponent.setEditArrowClickHandler(this._handleEditArrowClick);
 
     render(this._eventListComponent, this._eventEditComponent, RenderPosition.AFTERBEGIN);
 
@@ -79,12 +80,16 @@ export default class NewEvent {
       UpdateType.MAJOR,
       point,
     );
-    //this.destroy();
   }
 
   _handleFormDeleteClick() {
     this.destroy();
   }
+
+  _handleEditArrowClick() {
+    this.destroy();
+  }
+
 
   _handleEscKeyDown(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {

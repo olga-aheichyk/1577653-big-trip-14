@@ -1,26 +1,27 @@
 import AbstractClassView from './abstract-class.js';
 import {
   countPriceForType,
-  countCountsForType,
-  countDurationsForType,
+  countCountForType,
+  countDurationForType,
   formatDuration
 } from '../utils/data-processing.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { HIDE_CLASS } from '../const.js';
 
 
 const renderMoneyChart = (moneyCtx, points) => {
-  const types = points.map((point) => point.type.toUpperCase());
-  const typesNotRepeat = Array.from(new Set(types));
+  const sortedTypes = points.sort((a, b) => countPriceForType(points, a.type) - countPriceForType(points, b.type))
+    .map((point) => point.type.toUpperCase());
+  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
+  const data = sortedTypesNotRepeat.map((type) => countPriceForType(points, type.toLowerCase()));
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesNotRepeat,
+      labels: sortedTypesNotRepeat,
       datasets: [{
-        data: typesNotRepeat.map((type) => countPriceForType(points, type.toLowerCase())),
+        data,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -75,21 +76,22 @@ const renderMoneyChart = (moneyCtx, points) => {
         enabled: false,
       },
     },
-  })
-
-}
+  });
+};
 
 const renderTypeChart = (typeCtx, points) => {
-  const types = points.map((point) => point.type.toUpperCase());
-  const typesNotRepeat = Array.from(new Set(types));
+  const sortedTypes = points.sort((a, b) => countCountForType(points, a.type) - countCountForType(points, b.type)).map((point) => point.type.toUpperCase());
+  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
+  const data = sortedTypesNotRepeat.map((type) => countCountForType(points, type.toLowerCase()));
+
 
   return new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesNotRepeat,
+      labels: sortedTypesNotRepeat,
       datasets: [{
-        data: typesNotRepeat.map((type) => countCountsForType(points, type.toLowerCase())),
+        data,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -145,19 +147,21 @@ const renderTypeChart = (typeCtx, points) => {
       },
     },
   });
-}
+};
 
 const renderTimeChart = (timeCtx, points) => {
-  const types = points.map((point) => point.type.toUpperCase());
-  const typesNotRepeat = Array.from(new Set(types));
+  const sortedTypes = points.sort((a, b) => countDurationForType(points, a.type) - countDurationForType(points, b.type))
+    .map((point) => point.type.toUpperCase());
+  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
+  const data = sortedTypesNotRepeat.map((type) => countDurationForType(points, type.toLowerCase()));
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesNotRepeat,
+      labels: sortedTypesNotRepeat,
       datasets: [{
-        data: typesNotRepeat.map((type) => countDurationsForType(points, type.toLowerCase())),
+        data,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -213,7 +217,7 @@ const renderTimeChart = (timeCtx, points) => {
       },
     },
   });
-}
+};
 
 const createStatisticsTemplate = () => {
   return `
@@ -242,7 +246,7 @@ export default class Statistics extends AbstractClassView {
 
     this._moneyChart = null;
     this._typeChart = null;
-    // this._timeChart = null;
+    this._timeChart = null;
 
     this._setCharts();
   }
@@ -264,19 +268,11 @@ export default class Statistics extends AbstractClassView {
     if (this._typeChart !== null) {
       this._typeChart = null;
     }
+
+    if (this._timeChart !== null) {
+      this._timeChart = null;
+    }
   }
-
-  // show() {
-  //   if (this.getElement().classList.contains(HIDE_CLASS)) {
-  //     this.getElement().classList.remove(HIDE_CLASS);
-  //   }
-  // }
-
-  // hide() {
-  //   if (!this.getElement().classList.contains(HIDE_CLASS)) {
-  //     this.getElement().classList.add(HIDE_CLASS);
-  //   }
-  // }
 
   restoreHandlers() {
     this._setCharts();
@@ -294,9 +290,6 @@ export default class Statistics extends AbstractClassView {
     moneyCtx.height = BAR_HEIGHT * 7;
     this._moneyChart = renderMoneyChart(moneyCtx, this._getPoints());
 
-    // const types = Array.from(new Set(this._getPoints().map((point) => point.type)));
-    // const prices = types.map((type) => countPriceForType(this._getPoints(), type))
-    // console.log(prices);
 
     if (this._typeChart == !null) {
       this._typeChart = null;
