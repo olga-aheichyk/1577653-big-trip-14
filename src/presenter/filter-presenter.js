@@ -3,7 +3,6 @@ import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {UpdateType, FilterType} from '../const.js';
 import {tripEventsFilter} from '../utils/data-processing.js';
 
-
 export default class Filter {
   constructor(filterContainer, filterModel, pointsModel) {
     this._filterContainer = filterContainer;
@@ -35,18 +34,6 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
-  }
-
   _getFilters() {
     const points = this._pointsModel.getPoints();
 
@@ -67,5 +54,17 @@ export default class Filter {
         count: tripEventsFilter[FilterType.FUTURE](points).length,
       },
     ];
+  }
+
+  _handleModelEvent() {
+    this.init();
+  }
+
+  _handleFilterTypeChange(filterType) {
+    if (this._filterModel.getFilter() === filterType) {
+      return;
+    }
+
+    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 }

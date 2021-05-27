@@ -1,14 +1,12 @@
 import SortView from '../view/sort.js';
 import EventsListView from '../view/events-list.js';
 import NoEventView from '../view/no-event.js';
+import LoadingView from '../view/loading.js';
 import NewEventPresenter from '../presenter/new-event.js';
 import PointPresenter, {State as PointPresenterViewState} from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
-import LoadingView from '../view/loading.js';
-//import StatisticsView from '../view/statistics.js';
-
 export default class TripEvents {
   constructor(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api) {
     this._tripEventsContainer = tripEventsContainer;
@@ -19,7 +17,7 @@ export default class TripEvents {
     this._api = api;
 
     this._pointPresenter = {};
-    this._currentSortType = SortType.DAY;
+    this._currentSortType = null;
 
     this._sortComponent = null;
     this._eventListComponent = new EventsListView();
@@ -42,6 +40,7 @@ export default class TripEvents {
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
+    this._currentSortType = SortType.DAY;
     this._renderTripEvents();
   }
 
@@ -184,6 +183,7 @@ export default class TripEvents {
         break;
       case UpdateType.MAJOR:
         this._clearTripEvents();
+        this._currentSortType = SortType.DAY;
         this._renderTripEvents();
         break;
       case UpdateType.INIT:

@@ -31,8 +31,6 @@ const NavigationItem = {
   STATS: 'Stats',
 };
 
-const HIDE_CLASS = 'visually-hidden';
-
 export {
   AUTHORIZATION,
   END_POINT,
@@ -40,6 +38,5 @@ export {
   UserAction,
   UpdateType,
   FilterType,
-  NavigationItem,
-  HIDE_CLASS
+  NavigationItem
 };

@@ -1,12 +1,11 @@
-import dayjs from 'dayjs';
-//import he from 'he';
 import SmartClassView from './smart-class.js';
-
+import dayjs from 'dayjs';
+import he from 'he';
 import flatpickr from 'flatpickr';
-
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
-const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
+const createEventEditTemplate = (state, cityInfos, offersOfType) => {
   const {
     dateFrom,
     dateTo,
@@ -31,15 +30,15 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
       return `
       <div class="event__type-item">
         <input
-          id="event-type-${type.toLowerCase()}-${id}"
+          id="event-type-${type}-${id}"
           class="event__type-input  visually-hidden"
           type="radio" name="event-type"
-          value="${type.toLowerCase()}"
+          value="${type}"
         />
         <label
-        class="event__type-label  event__type-label--${type.toLowerCase()}"
-        for="event-type-${type.toLowerCase()}-${id}">
-          ${type}
+        class="event__type-label  event__type-label--${type}"
+        for="event-type-${type}-${id}">
+          ${capitalizeFirstLetter(type)}
         </label>
       </div>
       `;
@@ -49,41 +48,23 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
   };
 
   const createOffersCheckboxTemplate = (type, offersOfType) => {
-    const typeIndex = offersOfType.findIndex((item) => item.type === type.toLowerCase());
+    const typeIndex = offersOfType.findIndex((item) => item.type === type);
     const availableOffers = offersOfType[typeIndex].offers;
     const offersCheckboxTemplate = availableOffers.map((availableOffer, offerIndex) => {
       const isCheckedOffer = offers.map((offer) => offer.title).includes(availableOffer.title);
-      if (isCheckedOffer) {
-        return `
-        <div class="event__offer-selector">
-          <input
-            class="event__offer-checkbox  visually-hidden"
-            id="event-offer-${offerIndex++}"
-            type="checkbox"
-            name="event-offer-${offerIndex++}" checked
-          />
-          <label
-            class="event__offer-label"
-            for="event-offer-${offerIndex++}">
-              <span class="event__offer-title">${availableOffer.title}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${availableOffer.price}</span>
-          </label>
-        </div>
-        `;
-      }
 
       return `
       <div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${offerIndex++}"
+          id="event-offer-${type}-${offerIndex}"
           type="checkbox"
-          name="event-offer-${offerIndex++}"
+          name="event-offer-${type}-${offerIndex}"
+          ${isCheckedOffer ? 'checked' : ''}
           />
         <label
           class="event__offer-label"
-          for="event-offer-${offerIndex++}">
+          for="event-offer-${type}-${offerIndex++}">
             <span class="event__offer-title">${availableOffer.title}</span>
               &plus;&euro;&nbsp;
             <span class="event__offer-price">${availableOffer.price}</span>
@@ -155,15 +136,15 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     if (hasOffers || hasInfo) {
       return `
         <section class="event__details">
-          ${createOffersCheckboxTemplate(type, offersOfType, id)}
+          ${createOffersCheckboxTemplate(type, offersOfType)}
           ${createDestinationTemplate()}
         </section>`;
     }
     return '';
   };
 
-  const createDestinationListTemplate = (cityInfoArray) => {
-    return cityInfoArray
+  const createDestinationListTemplate = (cityInfos) => {
+    return cityInfos
       .map((cityInfo) => `<option value="${cityInfo.name}"></option>`)
       .join('\n');
   };
@@ -190,18 +171,18 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${id}">
-            ${type}
+            ${capitalizeFirstLetter(type)}
           </label>
           <input
             class="event__input  event__input--destination"
             id="event-destination-${id}"
             type="text"
             name="event-destination"
-            value="${hasInfo ? info.name : ''}"
+            value="${hasInfo ? he.encode(info.name) : ''}"
             list="destination-list-${id}"
           />
           <datalist id="destination-list-${id}">
-          ${createDestinationListTemplate(cityInfoArray)}
+          ${createDestinationListTemplate(cityInfos)}
           </datalist>
         </div>
 
@@ -233,9 +214,11 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
           <input
             class="event__input  event__input--price"
             id="event-price-${id}"
-            type="text"
+            type="number"
+            min="0"
+            max="10000"
             name="event-price"
-            value="${basePrice}"
+            value="${Number(basePrice)}"
           />
         </div>
 
@@ -269,6 +252,8 @@ export default class EventEdit extends SmartClassView {
     this._handleDestinationChange = this._handleDestinationChange.bind(this);
     this._handleDateFromChange = this._handleDateFromChange.bind(this);
     this._handleDateToChange = this._handleDateToChange.bind(this);
+    this._handlePriceChange = this._handlePriceChange.bind(this);
+    this._handleOffersChange = this._handleOffersChange.bind(this);
 
     this._setInnerHandlers();
     this._setDatepickerFrom();
@@ -299,6 +284,50 @@ export default class EventEdit extends SmartClassView {
     );
   }
 
+  setEditArrowClickHandler(callback) {
+    this._callback.editArrowClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleEditArrowClick);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
+  }
+
+  setFormDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
+    this.setFormSubmitHandler(this._callback.submitClick);
+    this.setFormDeleteClickHandler(this._callback.deleteClick);
+    this.setEditArrowClickHandler(this._callback.editArrowClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-group')
+      .addEventListener('change', this._handleTypeChange);
+
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this._handleDestinationChange);
+
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('change', this._handlePriceChange);
+
+    if (this._state.hasOffers) {
+      this.getElement()
+        .querySelector('.event__section--offers')
+        .addEventListener('change', this._handleOffersChange);
+    }
+  }
+
   _setDatepickerFrom() {
     if (this._datepickerFrom) {
       this._datepickerFrom.destroy();
@@ -310,10 +339,8 @@ export default class EventEdit extends SmartClassView {
         this.getElement().querySelectorAll('.event__input--time')[0],
         {
           dateFormat: 'd/m/Y H:i',
-          // minDate: 'today',
           enableTime: true,
-          //allowInput: true,
-          defaultDate: dayjs(this._state.dateFrom).format('DD/MM/YYYY HH:mm'),
+          defaultDate: new Date(this._state.dateFrom),
           onClose: this._handleDateFromChange,
         },
       );
@@ -333,8 +360,7 @@ export default class EventEdit extends SmartClassView {
           dateFormat: 'd/m/Y H:i',
           minDate: this._state.dateFrom,
           enableTime: true,
-          //allowInput: true,
-          defaultDate: dayjs(this._state.dateTo).format('DD/MM/YYYY HH:mm'),
+          defaultDate: new Date(this._state.dateTo),
           onClose: this._handleDateToChange,
         },
       );
@@ -345,19 +371,9 @@ export default class EventEdit extends SmartClassView {
     this._callback.editArrowClick();
   }
 
-  setEditArrowClickHandler(callback) {
-    this._callback.editArrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleEditArrowClick);
-  }
-
   _handleFormSubmit(evt) {
     evt.preventDefault();
-    this._callback.submitClick(EventEdit.parseStateToPoint(this._state, this._offers));
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.submitClick = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
+    this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
   }
 
   _handleTypeChange(evt) {
@@ -371,17 +387,12 @@ export default class EventEdit extends SmartClassView {
 
   _handleDestinationChange(evt) {
     evt.preventDefault();
-    const cityInfoArray = this._destinations;
-    const cityIndex = cityInfoArray.findIndex((item) => item.name === evt.target.value);
-    const newInfo = cityInfoArray[cityIndex];
+    const cityInfos = this._destinations;
+    const cityIndex = cityInfos.findIndex((item) => item.name === evt.target.value);
+    const newInfo = cityInfos[cityIndex];
     this.updateData({
       info: newInfo,
-      // info: {
-      //   name: evt.target.value,
-      //   description: cityInfoArray[cityIndex].description,
-      //   pictures: cityInfoArray[cityIndex].pictures,
-      // },
-      hasInfo: cityInfoArray[cityIndex] !== null,
+      hasInfo: cityInfos[cityIndex] !== null,
       hasDescription: newInfo !== null && newInfo.description.length > 0,
       hasImages: newInfo !== null && newInfo.pictures.length !== 0,
     });
@@ -399,37 +410,45 @@ export default class EventEdit extends SmartClassView {
     });
   }
 
+  _handlePriceChange(evt) {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: Number(evt.target.value),
+    });
+  }
+
+  _handleOffersChange(evt) {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    const typeIndex = this._offers.findIndex((item) => item.type === this._state.type);
+    const availableOffers = this._offers[typeIndex].offers;
+
+    let checkedOffers = [];
+
+    if (availableOffers.length) {
+      const checkedOffersIndexes = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'))
+        .slice().map((input) => input.name.slice(-1));
+
+      checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
+    }
+
+
+    this.updateData({
+      offers: checkedOffers,
+    });
+
+  }
+
   _handleFormDeleteClick(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state, this._offers));
-  }
-
-  setFormDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
-  }
-
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector('.event__type-group')
-      .addEventListener('change', this._handleTypeChange);
-
-    this.getElement()
-      .querySelector('.event__input--destination')
-      .addEventListener('change', this._handleDestinationChange);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setDatepickerFrom();
-    this._setDatepickerTo();
-    this.setFormSubmitHandler(this._callback.submitClick);
-    this.setFormDeleteClickHandler(this._callback.deleteClick);
-    this.setEditArrowClickHandler(this._callback.editArrowClick);
+    this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
   }
 
   static parsePointToState(point, offersOfType) {
-    //const offersOfType = this._offers;
     const typeIndex = offersOfType.findIndex((item) => item.type === point.type.toLowerCase());
 
     return Object.assign(
@@ -447,11 +466,11 @@ export default class EventEdit extends SmartClassView {
     );
   }
 
-  static parseStateToPoint(state, offersOfType) {
+  static parseStateToPoint(state) {
     state = Object.assign({}, state);
 
     if (!state.hasOffers) {
-      offersOfType[state.type] = [];
+      state.offers = [];
     }
 
     if (!state.hasInfo) {
@@ -465,7 +484,6 @@ export default class EventEdit extends SmartClassView {
         state.info.pictures = [];
       }
     }
-
 
     delete state.hasOffers;
     delete state.hasInfo;

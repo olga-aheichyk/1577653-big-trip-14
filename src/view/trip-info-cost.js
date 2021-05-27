@@ -12,7 +12,7 @@ const createTripInfoCostTemplate = (points) => {
       }
       return 0;
     })
-    .map((array) => array.map((offer) => offer.price).reduce((sum, item) => sum + item, 0))
+    .map((points) => points.map((offer) => offer.price).reduce((sum, item) => sum + item, 0))
     .reduce((sum, item) => sum + item, 0);
 
   return `

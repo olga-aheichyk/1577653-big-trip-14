@@ -1,5 +1,5 @@
-import { NavigationItem } from '../const.js';
 import AbstractClassView from './abstract-class.js';
+import { NavigationItem } from '../const.js';
 
 const createNavigationTemplate = () => {
   return `
@@ -21,6 +21,11 @@ export default class Navigation extends AbstractClassView {
     return createNavigationTemplate();
   }
 
+  setNavigationClickHandler(callback) {
+    this._callback.navigationClick = callback;
+    this.getElement().addEventListener('click', this._handleNavigationClick);
+  }
+
   _handleNavigationClick(evt) {
     evt.preventDefault();
 
@@ -33,11 +38,6 @@ export default class Navigation extends AbstractClassView {
     const activeNavButton = this.getElement().querySelector('.trip-tabs__btn--active');
     activeNavButton.classList.remove('trip-tabs__btn--active');
     evt.target.classList.add('trip-tabs__btn--active');
-  }
-
-  setNavigationClickHandler(callback) {
-    this._callback.navigationClick = callback;
-    this.getElement().addEventListener('click', this._handleNavigationClick);
   }
 }
 

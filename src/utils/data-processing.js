@@ -3,6 +3,11 @@ import { FilterType } from '../const.js';
 
 const getDuration = (from, to) => {
   const durationInMinutes = dayjs(to).diff(dayjs(from), 'minute');
+
+  return durationInMinutes;
+};
+
+const formatDuration = (durationInMinutes) => {
   if (durationInMinutes < 60) {
     const minutes = durationInMinutes < 10 ? `0${durationInMinutes}` : durationInMinutes;
     return `${minutes}M`;
@@ -30,42 +35,34 @@ const getDuration = (from, to) => {
   }
 };
 
-// const updateItem = (items, update) => {
-//   const index = items.findIndex((item) => item.id === update.id);
+const countPriceForType = (points, type) => {
+  const price = points.slice()
+    .filter((point) => point.type === type)
+    .map((point) => point.basePrice)
+    .reduce((sum, basePrice) => sum + basePrice, 0);
 
-//   if (index === -1) {
-//     return items;
-//   }
+  return price;
+};
 
-//   return [
-//     ...items.slice(0, index),
-//     update,
-//     ...items.slice(index + 1),
-//   ];
-// };
+const getCountForType = (points, type) => {
+  const count = points.slice()
+    .filter((point) => point.type === type).length;
+
+  return count;
+};
+
+const countDurationForType = (points, type) => {
+  const duration = points.slice()
+    .filter((point) => point.type === type)
+    .map((point) => getDuration(point.dateFrom, point.dateTo))
+    .reduce((sum, duration) => sum + duration, 0);
+
+  return duration;
+};
 
 const sortByDateAscending = (a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom));
 const sortByDurationDescending = (a, b) => (dayjs(a.dateFrom).diff(dayjs(a.dateTo))) - (dayjs(b.dateFrom).diff(dayjs(b.dateTo)));
 const sortByPriceDescending = (a, b) => b.basePrice - a.basePrice;
-
-
-// const filterEvents = (points, filterType) => {
-//   switch (filterType) {
-//     case FilterType.ALL:
-//       return points.slice();
-//     case FilterType.FUTURE:
-//       return points.slice().filter(
-//         (item) => dayjs(item.dateFrom).isAfter(dayjs(), 'day')
-//           || dayjs(item.dateFrom) === dayjs()
-//           || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day')
-//       );
-//     case FilterType.PAST:
-//       return points.slice().filter(
-//         (item) => dayjs(item.dateTo).isBefore(dayjs(), 'day')
-//           || dayjs(item.dateFrom).isBefore(dayjs(), 'day') && dayjs(item.dateTo).isAfter(dayjs(), 'day')
-//       );
-//   }
-// };
 
 const tripEventsFilter = {
   [FilterType.EVERYTHING]: (points) => {
@@ -88,10 +85,12 @@ const tripEventsFilter = {
 
 export {
   getDuration,
-  // updateItem,
+  formatDuration,
+  countPriceForType,
+  getCountForType,
+  countDurationForType,
   sortByDateAscending,
   sortByPriceDescending,
   sortByDurationDescending,
-  //filterEvents,
   tripEventsFilter
 };
