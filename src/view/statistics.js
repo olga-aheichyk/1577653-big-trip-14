@@ -8,18 +8,16 @@ import {
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const renderChart = (container, points, countingFunction, returnedValue) => {
+  const types = points.sort((a, b) => countingFunction(points, a.type) - countingFunction(points, b.type)).map((point) => point.type.toUpperCase());
+  const typesNotRepeat = Array.from(new Set(types));
+  const data = typesNotRepeat.map((type) => countingFunction(points, type.toLowerCase()));
 
-const renderMoneyChart = (moneyCtx, points) => {
-  const sortedTypes = points.sort((a, b) => countPriceForType(points, a.type) - countPriceForType(points, b.type))
-    .map((point) => point.type.toUpperCase());
-  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
-  const data = sortedTypesNotRepeat.map((type) => countPriceForType(points, type.toLowerCase()));
-
-  return new Chart(moneyCtx, {
+  return new Chart(container, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: sortedTypesNotRepeat,
+      labels: typesNotRepeat,
       datasets: [{
         data,
         backgroundColor: '#ffffff',
@@ -36,152 +34,12 @@ const renderMoneyChart = (moneyCtx, points) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => `€  ${val}`,
+          formatter: returnedValue,
         },
       },
       title: {
         display: true,
         text: 'MONEY',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-        }],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
-};
-
-const renderTypeChart = (typeCtx, points) => {
-  const sortedTypes = points.sort((a, b) => getCountForType(points, a.type) - getCountForType(points, b.type)).map((point) => point.type.toUpperCase());
-  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
-  const data = sortedTypesNotRepeat.map((type) => getCountForType(points, type.toLowerCase()));
-
-
-  return new Chart(typeCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels: sortedTypesNotRepeat,
-      datasets: [{
-        data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-      }],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${val}x`,
-        },
-      },
-      title: {
-        display: true,
-        text: 'TYPE',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-        }],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
-};
-
-const renderTimeChart = (timeCtx, points) => {
-  const sortedTypes = points.sort((a, b) => countDurationForType(points, a.type) - countDurationForType(points, b.type))
-    .map((point) => point.type.toUpperCase());
-  const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
-  const data = sortedTypesNotRepeat.map((type) => countDurationForType(points, type.toLowerCase()));
-
-  return new Chart(timeCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels: sortedTypesNotRepeat,
-      datasets: [{
-        data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-      }],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${formatDuration(val)}`,
-        },
-      },
-      title: {
-        display: true,
-        text: 'TIME-SPENT',
         fontColor: '#000000',
         fontSize: 23,
         position: 'left',
@@ -287,9 +145,13 @@ export default class Statistics extends AbstractClassView {
     const typesNotRepeatLength = Array.from(new Set(this._getPoints().map((point) => point.type))).length;
     const CTX_HEIGHT = BAR_HEIGHT * typesNotRepeatLength;
 
+    const formatMoneyValue = (val) => `€  ${val}`;
+    const formatTypeValue = (val) => `${val}x`;
+    const formatTimeValue = (val) => `${formatDuration(val)}`;
+
     const moneyCtx = this.getElement().querySelector('.statistics__chart--money');
     moneyCtx.height = CTX_HEIGHT;
-    this._moneyChart = renderMoneyChart(moneyCtx, this._getPoints());
+    this._moneyChart = renderChart(moneyCtx, this._getPoints(), countPriceForType, formatMoneyValue);
 
 
     if (this._typeChart == !null) {
@@ -298,7 +160,7 @@ export default class Statistics extends AbstractClassView {
 
     const typeCtx = this.getElement().querySelector('.statistics__chart--transport');
     typeCtx.height = CTX_HEIGHT;
-    this._typeChart = renderTypeChart(typeCtx, this._getPoints());
+    this._typeChart = renderChart(typeCtx, this._getPoints(), getCountForType, formatTypeValue);
 
 
     if (this._timeChart == !null) {
@@ -307,6 +169,6 @@ export default class Statistics extends AbstractClassView {
 
     const timeCtx = this.getElement().querySelector('.statistics__chart--time');
     timeCtx.height = CTX_HEIGHT;
-    this._timeChart = renderTimeChart(timeCtx, this._getPoints());
+    this._timeChart = renderChart(timeCtx, this._getPoints(), countDurationForType, formatTimeValue);
   }
 }
