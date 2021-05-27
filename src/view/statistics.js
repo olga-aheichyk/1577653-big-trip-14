@@ -137,10 +137,6 @@ export default class Statistics extends AbstractClassView {
   }
 
   _setCharts() {
-    if (this._moneyChart == !null) {
-      this._moneyChart = null;
-    }
-
     const BAR_HEIGHT = 55;
     const typesNotRepeatLength = Array.from(new Set(this._getPoints().map((point) => point.type))).length;
     const CTX_HEIGHT = BAR_HEIGHT * typesNotRepeatLength;
@@ -157,12 +153,16 @@ export default class Statistics extends AbstractClassView {
       TIME: (val) => `${formatDuration(val)}`,
     };
 
+    if (this._moneyChart !== null) {
+      this._moneyChart = null;
+    }
+
     const moneyCtx = this.getElement().querySelector('.statistics__chart--money');
     moneyCtx.height = CTX_HEIGHT;
     this._moneyChart = renderChart(moneyCtx, ChartTitle.MONEY, this._getPoints(), countPriceForType, FormatValue.MONEY);
 
 
-    if (this._typeChart == !null) {
+    if (this._typeChart !== null) {
       this._typeChart = null;
     }
 
@@ -171,7 +171,7 @@ export default class Statistics extends AbstractClassView {
     this._typeChart = renderChart(typeCtx, ChartTitle.TYPE, this._getPoints(), getCountForType, FormatValue.TYPE);
 
 
-    if (this._timeChart == !null) {
+    if (this._timeChart !== null) {
       this._timeChart = null;
     }
 
