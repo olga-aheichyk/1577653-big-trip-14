@@ -79,7 +79,8 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
 
       <div class="event__available-offers">
         ${offersCheckboxTemplate}
-      </div>`;
+      </div>
+      </section>`;
     }
     return '';
   };
