@@ -1,5 +1,5 @@
-import { SortType } from '../const.js';
 import AbstractClassView from './abstract-class.js';
+import { SortType } from '../const.js';
 
 const createSortTemplate = (currentSortType = SortType.DAY) => {
   return `
@@ -80,16 +80,16 @@ export default class Sort extends AbstractClassView {
     return createSortTemplate(this._currentSortType);
   }
 
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._handleSortTypeChange);
+  }
+
   _handleSortTypeChange(evt) {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
     this._callback.sortTypeChange(evt.target.dataset.type);
-  }
-
-  setSortTypeChangeHandler(callback) {
-    this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('click', this._handleSortTypeChange);
   }
 }
 

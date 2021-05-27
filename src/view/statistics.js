@@ -1,7 +1,7 @@
 import AbstractClassView from './abstract-class.js';
 import {
   countPriceForType,
-  countCountForType,
+  getCountForType,
   countDurationForType,
   formatDuration
 } from '../utils/data-processing.js';
@@ -80,9 +80,9 @@ const renderMoneyChart = (moneyCtx, points) => {
 };
 
 const renderTypeChart = (typeCtx, points) => {
-  const sortedTypes = points.sort((a, b) => countCountForType(points, a.type) - countCountForType(points, b.type)).map((point) => point.type.toUpperCase());
+  const sortedTypes = points.sort((a, b) => getCountForType(points, a.type) - getCountForType(points, b.type)).map((point) => point.type.toUpperCase());
   const sortedTypesNotRepeat = Array.from(new Set(sortedTypes));
-  const data = sortedTypesNotRepeat.map((type) => countCountForType(points, type.toLowerCase()));
+  const data = sortedTypesNotRepeat.map((type) => getCountForType(points, type.toLowerCase()));
 
 
   return new Chart(typeCtx, {
@@ -255,10 +255,6 @@ export default class Statistics extends AbstractClassView {
     return createStatisticsTemplate();
   }
 
-  _getPoints() {
-    return this._points.getPoints();
-  }
-
   remove() {
     super.removeElement();
     if (this._moneyChart !== null) {
@@ -278,16 +274,21 @@ export default class Statistics extends AbstractClassView {
     this._setCharts();
   }
 
+  _getPoints() {
+    return this._points.getPoints();
+  }
+
   _setCharts() {
     if (this._moneyChart == !null) {
       this._moneyChart = null;
     }
 
     const BAR_HEIGHT = 55;
-
+    const typesNotRepeatLength = Array.from(new Set(this._getPoints().map((point) => point.type))).length;
+    const CTX_HEIGHT = BAR_HEIGHT * typesNotRepeatLength;
 
     const moneyCtx = this.getElement().querySelector('.statistics__chart--money');
-    moneyCtx.height = BAR_HEIGHT * 7;
+    moneyCtx.height = CTX_HEIGHT;
     this._moneyChart = renderMoneyChart(moneyCtx, this._getPoints());
 
 
@@ -296,7 +297,7 @@ export default class Statistics extends AbstractClassView {
     }
 
     const typeCtx = this.getElement().querySelector('.statistics__chart--transport');
-    typeCtx.height = BAR_HEIGHT * 7;
+    typeCtx.height = CTX_HEIGHT;
     this._typeChart = renderTypeChart(typeCtx, this._getPoints());
 
 
@@ -305,7 +306,7 @@ export default class Statistics extends AbstractClassView {
     }
 
     const timeCtx = this.getElement().querySelector('.statistics__chart--time');
-    timeCtx.height = BAR_HEIGHT * 7;
+    timeCtx.height = CTX_HEIGHT;
     this._timeChart = renderTimeChart(timeCtx, this._getPoints());
   }
 }

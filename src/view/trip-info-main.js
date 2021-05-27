@@ -8,25 +8,25 @@ const TITLE_CITIES_COUNT = 3;
 
 const createTripInfoMainTemplate = (points) => {
   if (points) {
-    const tripCitiesArray = points
+    const tripCities = points
       .sort(sortByDateAscending)
       .map((point) => {
         return point.info.name;
       });
 
     const title =
-    tripCitiesArray.length > TITLE_CITIES_COUNT
+    tripCities.length > TITLE_CITIES_COUNT
       ?
-      `${tripCitiesArray[0]} &mdash; ... &mdash; ${tripCitiesArray[tripCitiesArray.length - 1]}`
+      `${tripCities[0]} &mdash; ... &mdash; ${tripCities[tripCities.length - 1]}`
       :
-      Array.from(new Set(tripCitiesArray))
+      Array.from(new Set(tripCities))
         .join(' &mdash; ');
 
-    const arrayFromStartDates = points.map((point) => dayjs(point.dateFrom));
-    const arrayFromEndDates = points.map((point) => dayjs(point.dateTo));
+    const startDates = points.map((point) => dayjs(point.dateFrom));
+    const endDates = points.map((point) => dayjs(point.dateTo));
 
-    const startTripDay = dayjs.min(arrayFromStartDates).format('MMM DD');
-    const endTripDay = dayjs.max(arrayFromEndDates).format('MMM DD');
+    const startTripDay = dayjs.min(startDates).format('MMM DD');
+    const endTripDay = dayjs.max(endDates).format('MMM DD');
 
     return `
     <div class="trip-info__main">

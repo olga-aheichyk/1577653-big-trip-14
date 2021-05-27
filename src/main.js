@@ -1,14 +1,18 @@
-import TripEventsPresenter from './presenter/trip-events.js';
-import TripMainPresenter from './presenter/trip-main.js';
+import Api from './api.js';
+
 import PointsModel from './model/points.js';
 import DestinationsModel from './model/destinations';
 import OffersModel from './model/offers.js';
 import FilterModel from './model/filter-model.js';
-import FilterPresenter from './presenter/filter-presenter.js';
+
 import StatisticsView from './view/statistics.js';
 import NavigationView from './view/navigation.js';
+import FilterPresenter from './presenter/filter-presenter.js';
+
+import TripEventsPresenter from './presenter/trip-events.js';
+import TripMainPresenter from './presenter/trip-main.js';
+
 import { NavigationItem, UpdateType, AUTHORIZATION, END_POINT } from './const.js';
-import Api from './api.js';
 import { remove, render, RenderPosition } from './utils/render.js';
 import { showAlert } from './utils/common.js';
 
@@ -52,11 +56,13 @@ api.getData()
       switch(navigationItem) {
         case NavigationItem.TABLE:
           remove(statisticsComponent);
+          document.querySelector('.trip-main__event-add-btn').disabled = false;
           tripEventsPresenter.init();
           break;
 
         case NavigationItem.STATS:
           tripEventsPresenter.destroy();
+          document.querySelector('.trip-main__event-add-btn').disabled = true;
           statisticsComponent = new StatisticsView(pointsModel);
           render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
           break;

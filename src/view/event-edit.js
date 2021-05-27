@@ -5,7 +5,7 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
-const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
+const createEventEditTemplate = (state, cityInfos, offersOfType) => {
   const {
     dateFrom,
     dateTo,
@@ -143,8 +143,8 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
     return '';
   };
 
-  const createDestinationListTemplate = (cityInfoArray) => {
-    return cityInfoArray
+  const createDestinationListTemplate = (cityInfos) => {
+    return cityInfos
       .map((cityInfo) => `<option value="${cityInfo.name}"></option>`)
       .join('\n');
   };
@@ -182,7 +182,7 @@ const createEventEditTemplate = (state, cityInfoArray, offersOfType) => {
             list="destination-list-${id}"
           />
           <datalist id="destination-list-${id}">
-          ${createDestinationListTemplate(cityInfoArray)}
+          ${createDestinationListTemplate(cityInfos)}
           </datalist>
         </div>
 
@@ -284,6 +284,50 @@ export default class EventEdit extends SmartClassView {
     );
   }
 
+  setEditArrowClickHandler(callback) {
+    this._callback.editArrowClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleEditArrowClick);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.submitClick = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
+  }
+
+  setFormDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
+    this.setFormSubmitHandler(this._callback.submitClick);
+    this.setFormDeleteClickHandler(this._callback.deleteClick);
+    this.setEditArrowClickHandler(this._callback.editArrowClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-group')
+      .addEventListener('change', this._handleTypeChange);
+
+    this.getElement()
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this._handleDestinationChange);
+
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('change', this._handlePriceChange);
+
+    if (this._state.hasOffers) {
+      this.getElement()
+        .querySelector('.event__section--offers')
+        .addEventListener('change', this._handleOffersChange);
+    }
+  }
+
   _setDatepickerFrom() {
     if (this._datepickerFrom) {
       this._datepickerFrom.destroy();
@@ -327,19 +371,9 @@ export default class EventEdit extends SmartClassView {
     this._callback.editArrowClick();
   }
 
-  setEditArrowClickHandler(callback) {
-    this._callback.editArrowClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleEditArrowClick);
-  }
-
   _handleFormSubmit(evt) {
     evt.preventDefault();
     this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.submitClick = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._handleFormSubmit);
   }
 
   _handleTypeChange(evt) {
@@ -353,12 +387,12 @@ export default class EventEdit extends SmartClassView {
 
   _handleDestinationChange(evt) {
     evt.preventDefault();
-    const cityInfoArray = this._destinations;
-    const cityIndex = cityInfoArray.findIndex((item) => item.name === evt.target.value);
-    const newInfo = cityInfoArray[cityIndex];
+    const cityInfos = this._destinations;
+    const cityIndex = cityInfos.findIndex((item) => item.name === evt.target.value);
+    const newInfo = cityInfos[cityIndex];
     this.updateData({
       info: newInfo,
-      hasInfo: cityInfoArray[cityIndex] !== null,
+      hasInfo: cityInfos[cityIndex] !== null,
       hasDescription: newInfo !== null && newInfo.description.length > 0,
       hasImages: newInfo !== null && newInfo.pictures.length !== 0,
     });
@@ -414,40 +448,6 @@ export default class EventEdit extends SmartClassView {
     this._callback.deleteClick(EventEdit.parseStateToPoint(this._state));
   }
 
-  setFormDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement().querySelector('form').addEventListener('reset', this._handleFormDeleteClick);
-  }
-
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector('.event__type-group')
-      .addEventListener('change', this._handleTypeChange);
-
-    this.getElement()
-      .querySelector('.event__input--destination')
-      .addEventListener('change', this._handleDestinationChange);
-
-    this.getElement()
-      .querySelector('.event__input--price')
-      .addEventListener('change', this._handlePriceChange);
-
-    if (this._state.hasOffers) {
-      this.getElement()
-        .querySelector('.event__section--offers')
-        .addEventListener('change', this._handleOffersChange);
-    }
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setDatepickerFrom();
-    this._setDatepickerTo();
-    this.setFormSubmitHandler(this._callback.submitClick);
-    this.setFormDeleteClickHandler(this._callback.deleteClick);
-    this.setEditArrowClickHandler(this._callback.editArrowClick);
-  }
-
   static parsePointToState(point, offersOfType) {
     const typeIndex = offersOfType.findIndex((item) => item.type === point.type.toLowerCase());
 
@@ -484,7 +484,6 @@ export default class EventEdit extends SmartClassView {
         state.info.pictures = [];
       }
     }
-
 
     delete state.hasOffers;
     delete state.hasInfo;

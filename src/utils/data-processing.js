@@ -36,28 +36,28 @@ const formatDuration = (durationInMinutes) => {
 };
 
 const countPriceForType = (points, type) => {
-  const pricesArray = points.slice()
+  const price = points.slice()
     .filter((point) => point.type === type)
     .map((point) => point.basePrice)
     .reduce((sum, basePrice) => sum + basePrice, 0);
 
-  return pricesArray;
+  return price;
 };
 
-const countCountForType = (points, type) => {
-  const countsArray = points.slice()
-    .filter((point) => point.type === type);
+const getCountForType = (points, type) => {
+  const count = points.slice()
+    .filter((point) => point.type === type).length;
 
-  return countsArray.length;
+  return count;
 };
 
 const countDurationForType = (points, type) => {
-  const durationsArray = points.slice()
+  const duration = points.slice()
     .filter((point) => point.type === type)
     .map((point) => getDuration(point.dateFrom, point.dateTo))
     .reduce((sum, duration) => sum + duration, 0);
 
-  return durationsArray;
+  return duration;
 };
 
 const sortByDateAscending = (a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom));
@@ -87,7 +87,7 @@ export {
   getDuration,
   formatDuration,
   countPriceForType,
-  countCountForType,
+  getCountForType,
   countDurationForType,
   sortByDateAscending,
   sortByPriceDescending,

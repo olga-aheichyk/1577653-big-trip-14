@@ -7,8 +7,6 @@ import PointPresenter, {State as PointPresenterViewState} from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { sortByDurationDescending, sortByDateAscending, sortByPriceDescending, tripEventsFilter } from '../utils/data-processing.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
-
-
 export default class TripEvents {
   constructor(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api) {
     this._tripEventsContainer = tripEventsContainer;
@@ -41,7 +39,6 @@ export default class TripEvents {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-
 
     this._currentSortType = SortType.DAY;
     this._renderTripEvents();

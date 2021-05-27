@@ -86,22 +86,22 @@ export default class EventItem extends AbstractClassView {
     return createEventItemTemplate(this._point);
   }
 
-  _handleArrowClick() {
-    this._callback.arrowClick();
-  }
-
   setArrowClickHandler(callback) {
     this._callback.arrowClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._handleArrowClick);
   }
 
-  _handleFavoriteClick(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._handleFavoriteClick);
+  }
+
+  _handleArrowClick() {
+    this._callback.arrowClick();
+  }
+
+  _handleFavoriteClick(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
