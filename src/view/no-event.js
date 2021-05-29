@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 
 const createNewEventCreationTemplate = () => {
   return `
@@ -6,7 +6,7 @@ const createNewEventCreationTemplate = () => {
   `;
 };
 
-export default class NoEvent extends AbstractClassView {
+export default class NoEvent extends AbstractView {
   getTemplate() {
     return createNewEventCreationTemplate();
   }

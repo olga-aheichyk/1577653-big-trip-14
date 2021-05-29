@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import { NavigationItem } from '../const.js';
 
 const createNavigationTemplate = () => {
@@ -10,7 +10,7 @@ const createNavigationTemplate = () => {
   `;
 };
 
-export default class Navigation extends AbstractClassView {
+export default class Navigation extends AbstractView {
   constructor() {
     super();
 

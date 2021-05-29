@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import dayjs from 'dayjs';
 import { getDuration, formatDuration } from '../utils/data-processing.js';
 
@@ -73,7 +73,7 @@ const createEventItemTemplate = (point) => {
   `;
 };
 
-export default class EventItem extends AbstractClassView {
+export default class EventItem extends AbstractView {
   constructor(point) {
     super();
     this._point = point;

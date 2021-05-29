@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import dayjs from 'dayjs';
 import minMax from 'dayjs/plugin/minMax';
 dayjs.extend(minMax);
@@ -39,7 +39,7 @@ const createTripInfoMainTemplate = (points) => {
   return '';
 };
 
-export default class TripInfoMain extends AbstractClassView {
+export default class TripInfoMain extends AbstractView {
   constructor(points) {
     super();
     this._points = points;

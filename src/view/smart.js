@@ -1,6 +1,6 @@
-import AbstractClass from './abstract-class.js';
+import Abstract from './abstract.js';
 
-export default class SmartClass extends AbstractClass {
+export default class Smart extends Abstract {
   constructor() {
     super();
     this._data = {};
@@ -26,7 +26,7 @@ export default class SmartClass extends AbstractClass {
     this.restoreHandlers();
   }
 
-  updateData(update) {
+  updateData(update, justDataUpdating = false) {
     if (!update) {
       return;
     }
@@ -36,6 +36,10 @@ export default class SmartClass extends AbstractClass {
       this._state,
       update,
     );
+
+    if (justDataUpdating) {
+      return;
+    }
 
     this.updateElement();
   }

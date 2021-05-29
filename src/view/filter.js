@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import { FilterType } from '../const.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
@@ -32,7 +32,7 @@ const createFiltersTemplate = (filters, currentFilterType) => {
     </form>`;
 };
 
-export default class Filters extends AbstractClassView {
+export default class Filter extends AbstractView {
   constructor(filters, currentFilterType = FilterType.EVERYTHING) {
     super();
     this._filters = filters;
