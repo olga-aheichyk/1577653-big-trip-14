@@ -3,12 +3,12 @@ import Api from './api.js';
 import PointsModel from './model/points.js';
 import DestinationsModel from './model/destinations';
 import OffersModel from './model/offers.js';
-import FilterModel from './model/filter-model.js';
+import FilterModel from './model/filter.js';
 
 import StatisticsView from './view/statistics.js';
 import NavigationView from './view/navigation.js';
-import FilterPresenter from './presenter/filter-presenter.js';
 
+import FilterPresenter from './presenter/filter.js';
 import TripEventsPresenter from './presenter/trip-events.js';
 import TripMainPresenter from './presenter/trip-main.js';
 

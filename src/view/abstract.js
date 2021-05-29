@@ -2,9 +2,9 @@ import { createDOMElementFromMarkup } from '../utils/render.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export default class AbstractClass {
+export default class Abstract {
   constructor() {
-    if (new.target === AbstractClass) {
+    if (new.target === Abstract) {
       throw new Error('Can\'t instantiate Abstract, only concrete one.');
     }
 

@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import { SortType } from '../const.js';
 
 const createSortTemplate = (currentSortType = SortType.DAY) => {
@@ -68,7 +68,7 @@ const createSortTemplate = (currentSortType = SortType.DAY) => {
   `;
 };
 
-export default class Sort extends AbstractClassView {
+export default class Sort extends AbstractView {
   constructor(currentSortType) {
     super();
 

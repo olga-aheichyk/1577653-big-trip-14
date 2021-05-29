@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 
 const createTripInfoTemplate = () => {
   return `
@@ -6,7 +6,7 @@ const createTripInfoTemplate = () => {
   `;
 };
 
-export default class TripInfo extends AbstractClassView {
+export default class TripInfo extends AbstractView {
   getTemplate() {
     return createTripInfoTemplate();
   }

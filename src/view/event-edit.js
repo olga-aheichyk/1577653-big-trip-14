@@ -1,4 +1,4 @@
-import SmartClassView from './smart-class.js';
+import SmartView from './smart.js';
 import dayjs from 'dayjs';
 import he from 'he';
 import flatpickr from 'flatpickr';
@@ -16,15 +16,13 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
     id,
     hasOffers,
     hasInfo,
-    hasDescription,
-    hasImages,
     isDisabled = false,
     isSaving = false,
     isDeleting = false,
   } = state;
 
   const createTypesCheckboxTemplate = (offersOfType, id) => {
-    const types = offersOfType.slice().map((object) => object.type);
+    const types = offersOfType.slice().map((offerOfType) => offerOfType.type);
 
     const typesCheckboxTemplate = types.map((type) => {
       return `
@@ -88,7 +86,7 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
   const createDestinationTemplate = () => {
 
     const createImagesTemplate = () => {
-      if (hasImages) {
+      if (info !== null && info.pictures.length) {
         const imagesMarkup = info.pictures.map((item) => {
           return `
           <img
@@ -111,7 +109,7 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
     };
 
     const createDescriptionTemplate = () => {
-      if (hasDescription) {
+      if (info !== null && info.description.length) {
         return `
           <p class="event__destination-description">
             ${info.description}
@@ -121,7 +119,7 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
       return '';
     };
 
-    if (hasDescription || hasImages) {
+    if (info !== null) {
       return `
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -219,7 +217,7 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
             min="0"
             max="10000"
             name="event-price"
-            value="${Number(basePrice)}"
+            value="${basePrice}"
           />
         </div>
 
@@ -235,7 +233,7 @@ const createEventEditTemplate = (state, cityInfos, offersOfType) => {
   `;
 };
 
-export default class EventEdit extends SmartClassView {
+export default class EventEdit extends SmartView {
   constructor(point, destinations, offers) {
     super();
 
@@ -244,6 +242,7 @@ export default class EventEdit extends SmartClassView {
     this._state = EventEdit.parsePointToState(point, this._offers);
     this._datepickerFrom = null;
     this._datepickerTo = null;
+    this._checkedOffers = this._state.offers;
 
     this._handleEditArrowClick = this._handleEditArrowClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -340,6 +339,7 @@ export default class EventEdit extends SmartClassView {
         this.getElement().querySelectorAll('.event__input--time')[0],
         {
           dateFormat: 'd/m/Y H:i',
+          maxDate: new Date(this._state.dateTo),
           enableTime: true,
           defaultDate: new Date(this._state.dateFrom),
           onClose: this._handleDateFromChange,
@@ -374,14 +374,20 @@ export default class EventEdit extends SmartClassView {
 
   _handleFormSubmit(evt) {
     evt.preventDefault();
+    this.updateData({
+      offers: this._checkedOffers,
+    });
     this._callback.submitClick(EventEdit.parseStateToPoint(this._state));
   }
 
   _handleTypeChange(evt) {
     evt.preventDefault();
+
     const typeIndex = this._offers.findIndex((item) => item.type === evt.target.value);
+    this._checkedOffers = [];
     this.updateData({
       type: evt.target.value,
+      offers: this._checkedOffers,
       hasOffers: this._offers[typeIndex].offers.length !== 0,
     });
   }
@@ -393,20 +399,21 @@ export default class EventEdit extends SmartClassView {
     const newInfo = cityInfos[cityIndex];
     this.updateData({
       info: newInfo,
+      offers: this._checkedOffers,
       hasInfo: cityInfos[cityIndex] !== null,
-      hasDescription: newInfo !== null && newInfo.description.length > 0,
-      hasImages: newInfo !== null && newInfo.pictures.length !== 0,
     });
   }
 
   _handleDateFromChange([userDate]) {
     this.updateData({
+      offers: this._checkedOffers,
       dateFrom: userDate,
     });
   }
 
   _handleDateToChange([userDate]) {
     this.updateData({
+      offers: this._checkedOffers,
       dateTo: userDate,
     });
   }
@@ -415,7 +422,7 @@ export default class EventEdit extends SmartClassView {
     evt.preventDefault();
     this.updateData({
       basePrice: Number(evt.target.value),
-    });
+    }, true);
   }
 
   _handleOffersChange(evt) {
@@ -428,20 +435,12 @@ export default class EventEdit extends SmartClassView {
     const typeIndex = this._offers.findIndex((item) => item.type === this._state.type);
     const availableOffers = this._offers[typeIndex].offers;
 
-    let checkedOffers = [];
-
     if (availableOffers.length) {
       const checkedOffersIndexes = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'))
         .slice().map((input) => input.name.slice(-1));
 
-      checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
+      this._checkedOffers = checkedOffersIndexes.map((index) => availableOffers[index]);
     }
-
-
-    this.updateData({
-      offers: checkedOffers,
-    });
-
   }
 
   _handleFormDeleteClick(evt) {
@@ -458,8 +457,6 @@ export default class EventEdit extends SmartClassView {
       {
         hasOffers: offersOfType[typeIndex].offers.length !== 0,
         hasInfo: point.info !== null,
-        hasDescription: point.info !== null && point.info.description.length !== 0,
-        hasImages: point.info !== null && point.info.description.length !== 0,
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
@@ -476,20 +473,10 @@ export default class EventEdit extends SmartClassView {
 
     if (!state.hasInfo) {
       state.info = null;
-    } else {
-      if (!state.hasDescription) {
-        state.info.description = '';
-      }
-
-      if (!state.hasImages) {
-        state.info.pictures = [];
-      }
     }
 
     delete state.hasOffers;
     delete state.hasInfo;
-    delete state.hasDescription;
-    delete state.hasImages;
     delete state.isDisabled;
     delete state.isSaving;
     delete state.isDeleting;

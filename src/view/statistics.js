@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 import {
   countPriceForType,
   getCountForType,
@@ -96,7 +96,7 @@ const createStatisticsTemplate = () => {
     </section>`;
 };
 
-export default class Statistics extends AbstractClassView {
+export default class Statistics extends AbstractView {
   constructor(points) {
     super();
 

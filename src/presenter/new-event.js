@@ -12,7 +12,6 @@ const BLANK_EVENT = {
   offers: [],
 };
 
-
 export default class NewEvent {
   constructor(eventListComponent, changeData, destinationsModel, offersModel) {
     this._eventListComponent = eventListComponent;

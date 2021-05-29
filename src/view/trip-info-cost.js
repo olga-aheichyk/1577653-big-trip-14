@@ -1,4 +1,4 @@
-import AbstractClassView from './abstract-class.js';
+import AbstractView from './abstract.js';
 
 const createTripInfoCostTemplate = (points) => {
   const tripBasicCost = points
@@ -25,7 +25,7 @@ const createTripInfoCostTemplate = (points) => {
   `;
 };
 
-export default class TripInfoCost extends AbstractClassView {
+export default class TripInfoCost extends AbstractView {
   constructor(points = []) {
     super();
     this._points = points;
