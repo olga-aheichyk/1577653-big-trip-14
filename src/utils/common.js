@@ -21,7 +21,12 @@ const showAlert = (message = 'Info from the server is not available now. Please,
   }, ALERT_SHOW_TIME);
 };
 
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
 export {
   capitalizeFirstLetter,
-  showAlert
+  showAlert,
+  isOnline
 };

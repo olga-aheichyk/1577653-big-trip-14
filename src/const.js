@@ -1,6 +1,10 @@
 const AUTHORIZATION = 'Basic 1577653oaheichyk';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
+const STORE_PREFIX = 'big-trip-localstorage';
+const STORE_VER = 'v14';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
 const SortType = {
   DAY: 'day',
   TIME: 'time',
@@ -34,6 +38,7 @@ const NavigationItem = {
 export {
   AUTHORIZATION,
   END_POINT,
+  STORE_NAME,
   SortType,
   UserAction,
   UpdateType,
