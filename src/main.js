@@ -1,4 +1,6 @@
-import Api from './api.js';
+import Api from './api/api.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 
 import PointsModel from './model/points.js';
 import DestinationsModel from './model/destinations';
@@ -12,11 +14,15 @@ import FilterPresenter from './presenter/filter.js';
 import TripEventsPresenter from './presenter/trip-events.js';
 import TripMainPresenter from './presenter/trip-main.js';
 
-import { NavigationItem, UpdateType, AUTHORIZATION, END_POINT } from './const.js';
+import { NavigationItem, UpdateType, AUTHORIZATION, END_POINT, STORE_NAME, DOCUMENT_OFFLINE_TITLE } from './const.js';
 import { remove, render, RenderPosition } from './utils/render.js';
-import { showAlert } from './utils/common.js';
+import { showAlert, isOnline } from './utils/common.js';
+
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
+
 document.querySelector('.trip-main__event-add-btn').disabled = true;
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -29,7 +35,7 @@ const offersModel = new OffersModel();
 const filterModel = new FilterModel();
 
 
-api.getData()
+apiWithProvider.getData()
   .then(([points, destinations, offers]) => {
     destinationsModel.setDestinations(destinations);
     offersModel.setOffers(offers);
@@ -47,7 +53,7 @@ api.getData()
     const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
     filterPresenter.init();
 
-    const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, api);
+    const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, apiWithProvider);
     tripEventsPresenter.init();
 
     let statisticsComponent = null;
@@ -73,8 +79,30 @@ api.getData()
 
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
       evt.preventDefault();
+
+      if (!isOnline()) {
+        showAlert('You can\'t create event offline');
+        document.querySelector('.trip-main__event-add-btn').disabled = true;
+        return;
+      }
+
       document.querySelector('.trip-main__event-add-btn').disabled = true;
       tripEventsPresenter.createEvent();
     });
   })
   .catch(() => showAlert());
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(DOCUMENT_OFFLINE_TITLE, '');
+  document.querySelector('.trip-main__event-add-btn').disabled = false;
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += DOCUMENT_OFFLINE_TITLE;
+  document.querySelector('.trip-main__event-add-btn').disabled = true;
+});

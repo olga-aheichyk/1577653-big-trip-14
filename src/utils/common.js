@@ -5,7 +5,7 @@ const capitalizeFirstLetter = (word) => {
 };
 
 const showAlert = (message = 'Info from the server is not available now. Please, retry later') => {
-  const adTitle = document.querySelector('.trip-main');
+  const main = document.querySelector('.trip-main');
   const alertContainer = document.createElement('div');
   alertContainer.style.padding = '30px';
   alertContainer.style.fontSize = '40px';
@@ -14,14 +14,19 @@ const showAlert = (message = 'Info from the server is not available now. Please,
 
   alertContainer.textContent = message;
 
-  adTitle.append(alertContainer);
+  main.append(alertContainer);
 
   setTimeout(() => {
     alertContainer.remove();
   }, ALERT_SHOW_TIME);
 };
 
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
 export {
   capitalizeFirstLetter,
-  showAlert
+  showAlert,
+  isOnline
 };

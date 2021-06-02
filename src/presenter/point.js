@@ -1,6 +1,7 @@
 import EventItemView from '../view/event-item.js';
 import EventEditView from '../view/event-edit.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {isOnline, showAlert} from '../utils/common.js';
 import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
@@ -143,6 +144,11 @@ export default class Point {
   }
 
   _handleArrowClick() {
+    if (!isOnline()) {
+      showAlert('You can\'t edit event offline');
+      return;
+    }
+
     this._openEventEdit();
   }
 
@@ -152,6 +158,11 @@ export default class Point {
   }
 
   _handleFormSubmit(point) {
+    if (!isOnline()) {
+      showAlert('You can\'t save event offline');
+      return;
+    }
+
     this._changeData(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
@@ -160,6 +171,11 @@ export default class Point {
   }
 
   _handleFormDeleteClick(point) {
+    if (!isOnline()) {
+      showAlert('You can\'t delete event offline');
+      return;
+    }
+
     this._changeData(
       UserAction.DELETE_POINT,
       UpdateType.MAJOR,
