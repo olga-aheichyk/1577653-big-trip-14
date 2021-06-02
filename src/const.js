@@ -1,9 +1,11 @@
-const AUTHORIZATION = 'Basic 1577653oaheichyk';
+const AUTHORIZATION = 'Basic 1577653oaheichyk1';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
 const STORE_PREFIX = 'big-trip-localstorage';
 const STORE_VER = 'v14';
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+const DOCUMENT_OFFLINE_TITLE = ' [Offline]';
 
 const SortType = {
   DAY: 'day',
@@ -39,6 +41,7 @@ export {
   AUTHORIZATION,
   END_POINT,
   STORE_NAME,
+  DOCUMENT_OFFLINE_TITLE,
   SortType,
   UserAction,
   UpdateType,

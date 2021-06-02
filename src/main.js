@@ -14,7 +14,7 @@ import FilterPresenter from './presenter/filter.js';
 import TripEventsPresenter from './presenter/trip-events.js';
 import TripMainPresenter from './presenter/trip-main.js';
 
-import { NavigationItem, UpdateType, AUTHORIZATION, END_POINT, STORE_NAME } from './const.js';
+import { NavigationItem, UpdateType, AUTHORIZATION, END_POINT, STORE_NAME, DOCUMENT_OFFLINE_TITLE } from './const.js';
 import { remove, render, RenderPosition } from './utils/render.js';
 import { showAlert, isOnline } from './utils/common.js';
 
@@ -41,65 +41,67 @@ apiWithProvider.getData()
     offersModel.setOffers(offers);
     pointsModel.setPoints(UpdateType.INIT, points);
   })
-  .then(() => {
-    document.querySelector('.trip-main__event-add-btn').disabled = false;
-
-    const navigationComponent = new NavigationView();
-    render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
-
-    const tripMainPresenter = new TripMainPresenter(pointsModel);
-    tripMainPresenter.init();
-
-    const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
-    filterPresenter.init();
-
-    const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, apiWithProvider);
-    tripEventsPresenter.init();
-
-    let statisticsComponent = null;
-
-    const handleNavigationClick = (navigationItem) => {
-      switch(navigationItem) {
-        case NavigationItem.TABLE:
-          remove(statisticsComponent);
-          document.querySelector('.trip-main__event-add-btn').disabled = false;
-          tripEventsPresenter.init();
-          break;
-
-        case NavigationItem.STATS:
-          tripEventsPresenter.destroy();
-          document.querySelector('.trip-main__event-add-btn').disabled = true;
-          statisticsComponent = new StatisticsView(pointsModel);
-          render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
-          break;
-      }
-    };
-
-    navigationComponent.setNavigationClickHandler(handleNavigationClick);
-
-    document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
-
-      if (!isOnline()) {
-        showAlert('You can\'t create event offline');
-        return;
-      }
-
-      document.querySelector('.trip-main__event-add-btn').disabled = true;
-      tripEventsPresenter.createEvent();
-    });
-  })
   .catch(() => showAlert());
+
+document.querySelector('.trip-main__event-add-btn').disabled = false;
+
+const navigationComponent = new NavigationView();
+render(navigationContainer, navigationComponent, RenderPosition.BEFOREEND);
+
+const tripMainPresenter = new TripMainPresenter(pointsModel);
+tripMainPresenter.init();
+
+const filterPresenter = new FilterPresenter(filtersContainer, filterModel, pointsModel);
+filterPresenter.init();
+
+const tripEventsPresenter = new TripEventsPresenter(tripEventsContainer, pointsModel, filterModel, destinationsModel, offersModel, apiWithProvider);
+tripEventsPresenter.init();
+
+let statisticsComponent = null;
+
+const handleNavigationClick = (navigationItem) => {
+  switch(navigationItem) {
+    case NavigationItem.TABLE:
+      remove(statisticsComponent);
+      document.querySelector('.trip-main__event-add-btn').disabled = false;
+      tripEventsPresenter.init();
+      break;
+
+    case NavigationItem.STATS:
+      tripEventsPresenter.destroy();
+      document.querySelector('.trip-main__event-add-btn').disabled = true;
+      statisticsComponent = new StatisticsView(pointsModel);
+      render(tripEventsContainer, statisticsComponent, RenderPosition.AFTERBEGIN);
+      break;
+  }
+};
+
+navigationComponent.setNavigationClickHandler(handleNavigationClick);
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+
+  if (!isOnline()) {
+    showAlert('You can\'t create event offline');
+    document.querySelector('.trip-main__event-add-btn').disabled = true;
+    return;
+  }
+
+  document.querySelector('.trip-main__event-add-btn').disabled = true;
+  tripEventsPresenter.createEvent();
+});
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('./sw.js');
 });
 
 window.addEventListener('online', () => {
-  document.title = document.title.replace(' [offline]', '');
+  document.title = document.title.replace(DOCUMENT_OFFLINE_TITLE, '');
+  document.querySelector('.trip-main__event-add-btn').disabled = false;
   apiWithProvider.sync();
 });
 
 window.addEventListener('offline', () => {
-  document.title += ' [offline]';
+  document.title += DOCUMENT_OFFLINE_TITLE;
+  document.querySelector('.trip-main__event-add-btn').disabled = true;
 });
