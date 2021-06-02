@@ -63,6 +63,7 @@ apiWithProvider.getData()
         case NavigationItem.TABLE:
           remove(statisticsComponent);
           document.querySelector('.trip-main__event-add-btn').disabled = false;
+          tripEventsPresenter.destroy();
           tripEventsPresenter.init();
           break;
 
